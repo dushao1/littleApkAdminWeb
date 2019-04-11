@@ -49,9 +49,19 @@
                         title: '角色管理'
                     },
                     {
+                        icon: 'el-icon-rank',
+                        index: 'userRole',
+                        title: '菜单管理'
+                    },
+                    {
+                        icon: 'el-icon-rank',
+                        index: 'userRole',
+                        title: '管理员信息维护'
+                    },
+                    {
                         icon: 'el-icon-lx-emoji',
                         index: 'users',
-                        title: '员工管理'
+                        title: '微信用户管理'
                     },
                     {
                         icon: 'el-icon-lx-cascades',
