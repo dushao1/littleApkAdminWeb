@@ -53,7 +53,7 @@ export default new Router({
                 },
                 {
                     path: '/table',
-                    component: resolve => require(['../components/page/BaseTable.vue'], resolve),
+                    component: resolve => require(['../components/test_page/store_list_page.vue'], resolve),
                     meta: { title: '基础表格' }
                 },
                 {
