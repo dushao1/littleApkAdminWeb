@@ -3,12 +3,14 @@ import App from './App.vue'
 import router from './router'
 import axios from 'axios';
 import ElementUI from 'element-ui';
+
 import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import './assets/css/icon.css';
 import './components/common/directives';
 import "babel-polyfill";
-import Qs from 'qs'
+import Qs from 'qs';
+import apiConfig from "./components/common/apiPath";
 
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
@@ -16,6 +18,7 @@ Vue.use(ElementUI, {
 });
 Vue.prototype.$axios = axios;
 Vue.prototype.$Qs = Qs;
+Vue.prototype.$apiPath = apiConfig;
 
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {

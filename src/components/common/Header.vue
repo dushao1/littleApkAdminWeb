@@ -23,7 +23,10 @@
                     <span class="btn-bell-badge" v-if="message"></span>
                 </div>
                 <!-- 用户头像 -->
-                <div class="user-avator"><img src="../../assets/img/img.jpg"></div>
+                <div class="user-avator">
+                    <img v-bind:src="tempHeadImg">
+                
+                </div>
                 <!-- 用户名下拉菜单 -->
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
@@ -51,7 +54,15 @@
                 collapse: false,
                 fullscreen: false,
                 name: 'linxin',
-                message: 2
+                message: 2,
+                tempHeadImg:"http://yjsc-voice.oss-cn-beijing.aliyuncs.com/img.jpg"
+            }
+        },
+        created() {
+            var adminInfoLocals = JSON.parse(localStorage.getItem("admin_info"));
+            console.log(JSON.stringify(adminInfoLocals.headImg)+"login");
+            if(adminInfoLocals != null && adminInfoLocals.headImg){
+                this.tempHeadImg = adminInfoLocals.headImg;
             }
         },
         computed:{

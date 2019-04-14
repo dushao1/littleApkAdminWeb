@@ -50,13 +50,13 @@
                     },
                     {
                         icon: 'el-icon-rank',
-                        index: 'userRole',
+                        index: 'roleMenu',
                         title: '菜单管理'
                     },
                     {
                         icon: 'el-icon-rank',
-                        index: 'userRole',
-                        title: '管理员信息维护'
+                        index: 'admin',
+                        title: '服务商管理'
                     },
                     {
                         icon: 'el-icon-lx-emoji',

@@ -26,7 +26,7 @@ export default new Router({
                 },
                 {
                     path: '/contents',
-                    component: resolve => require(['../components/page/Contents.vue'], resolve),
+                    component: resolve => require(['../components/test_page/store_list_page.vue'], resolve),
                     meta: { title: '内容管理' }
                 },
                 {
@@ -54,7 +54,12 @@ export default new Router({
                 {
                     path: '/table',
                     component: resolve => require(['../components/test_page/store_list_page.vue'], resolve),
-                    meta: { title: '基础表格' }
+                    meta: { title: '广告' }
+                },
+                {
+                    path: '/admin',
+                    component: resolve => require(['../components/test_page/admin_list_page.vue'], resolve),
+                    meta: { title: "服务商" }
                 },
                 {
                     path: '/tabs',

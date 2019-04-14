@@ -103,7 +103,7 @@
             getData() {
                 // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
                 var _this = this
-                this.$axios.post('http://192.168.0.104:8804/CiotemsYzzn/store/allStore')
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore)
                 .then(function (res) {
                     console.log(res.data.data);
                     _this.tableData = res.data.data
@@ -156,7 +156,7 @@
                  var querystring = this.$Qs;
                  var message = this.$message;
                  var that = this;
-                 this.$axios.post('http://192.168.0.104:8804/CiotemsYzzn/backgroundStore/updateStroe',querystring.stringify(data))
+                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,querystring.stringify(data))
                     .then(function (res) {
                         message.success('修改成功');
                         that.getData();
@@ -176,7 +176,7 @@
                  var querystring = this.$Qs;
                  var message = this.$message;
                  var that = this;
-                 this.$axios.post('http://192.168.0.104:8804/CiotemsYzzn/backgroundStore/updateStroe',querystring.stringify(data))
+                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,querystring.stringify(data))
                     .then(function (res) {
                         message.success('删除成功');
                         that.getData();
