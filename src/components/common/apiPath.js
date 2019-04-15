@@ -1,5 +1,5 @@
 'use strict';
-module.exports = {
+let apiConfig= {
         
   // baseIp:'yjsc.2012626.com',
   // basePath: 'https://yjsc.2012626.com:8443/yjsc',
@@ -13,5 +13,8 @@ module.exports = {
   getNoCheckList:'/admin/getNoCheckList',
   deleteNoCheck:'/admin/deleteNoCheck',
   allStore:'/store/allStore',
-  updateStroe:'/backgroundStore/updateStroe'
+  updateStore:'/backgroundStore/updateStroe',
+  addStore:'/backgroundStore/addStore'
 };
+
+export {apiConfig}
