@@ -2,8 +2,17 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 内容列表</el-breadcrumb-item>
             </el-breadcrumb>
+        </div>
+         <div class="handle-box">
+            <!-- <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button> -->
+            <!-- <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
+            <el-option key="1" label="广东省" value="广东省"></el-option>
+            <el-option key="2" label="湖南省" value="湖南省"></el-option>
+            </el-select> -->
+            <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+            <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <div class="container">
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
@@ -34,7 +43,7 @@
                 <el-button type="primary" icon="add" class="handle-del mr10" @click="addStore()">添加</el-button>
             </div>
             <div class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalCount">
                 </el-pagination>
             </div>
         </div>
@@ -61,19 +70,19 @@
                     <el-col :span="11">
                         <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
                     </el-col>
-                    <el-col class="line" :span="2">-</el-col>
+                    <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
                         <el-time-picker placeholder="选择时间" v-model="form.startTime" style="width: 100%;"></el-time-picker>
-                    </el-col>
+                    </el-col> -->
                 </el-form-item>
                 <el-form-item label="结束时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
                     </el-col>
-                    <el-col class="line" :span="2">-</el-col>
+                    <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
                         <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
-                    </el-col>
+                    </el-col> -->
                 </el-form-item>
                 <el-form-item label="剩余红包数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.surplusCount" ></el-input>
@@ -110,19 +119,19 @@
                     <el-col :span="11">
                         <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
                     </el-col>
-                    <el-col class="line" :span="2">-</el-col>
+                    <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
                         <el-time-picker placeholder="选择时间" v-model="form.startTime" style="width: 100%;"></el-time-picker>
-                    </el-col>
+                    </el-col> -->
                 </el-form-item>
                 <el-form-item label="结束时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
                     </el-col>
-                    <el-col class="line" :span="2">-</el-col>
+                    <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
                         <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
-                    </el-col>
+                    </el-col> -->
                 </el-form-item>
                 <el-form-item label="剩余红包数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.surplusCount" ></el-input>
@@ -158,7 +167,7 @@
 
 <script>
  import VueCropper  from 'vue-cropperjs';
- import {dateFormat} from '../common/date.js'
+ import {_public} from '../common/utils.js'
     export default {
         name: 'baseTable',
         data() {
@@ -171,6 +180,7 @@
                 select_word: '',
                 del_list: [],
                 fileList:[],
+                totalCount:0,
                 editVisible: false,
                 delVisible: false,
                 addVisible: false,
@@ -266,17 +276,18 @@
             getData() {
                 // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
                 var _this = this
-                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore)
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore+"?&page="+ this.cur_page +"&content=" + this.select_word)
                 .then(function (res) {
                     console.log(res.data.data);
-                    _this.tableData = res.data.data
+                    _this.tableData = res.data.data.list;
+                    _this.totalCount = res.data.data.totalCount;
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
             },
             search() {
-                this.is_search = true;
+                this.getData();
             },
             handleEdit(index, row) {
                 console.log("角标"+index)
@@ -298,8 +309,11 @@
                     startTime: item.startTime,
                     surplusCount: item.surplusCount,
                     totalCount: item.totalCount,
-                    status: item.status
+                    status: item.status,
+                    startDate:item.startTime,
+                    endDate:item.endTime
                 }
+                
                 this.editVisible = true;
             },
             handleDelete(index, row) {
@@ -311,6 +325,21 @@
             },
             addStore(){
                 this.addVisible = true;
+                 this.form = {
+                    sId: '',
+                    title: '',
+                    titleDetail: '',
+                    firstImg: require('../../assets/img/img.jpg'),
+                    detailImg: '',
+                    endTime: '',
+                    startTime: '',
+                    surplusCount: '',
+                    totalCount: '',
+                    status: '',
+                    startDate:'',
+                    endDate:''
+                }
+                this.cropImg = require('../../assets/img/img.jpg');
             },
             // 保存编辑
             saveEdit(e) {
@@ -325,8 +354,8 @@
                 param.append("surplusCount", item.surplusCount);
                 param.append("totalCount", item.totalCount);
                 param.append("sId", tableItem.sId);
-                param.append("startDate", dateFormat.FormData(tableItem.startDate, 'yyyy-MM-dd HH:mm:ss'));
-                param.append("endDate", tableItem.endDate + " " +tableItem.endTime);
+                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                 //param.append('chunk','0');//添加form表单中其他数据
                 //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
                 let config = {
@@ -356,10 +385,8 @@
                 param.append("titleDetail", item.titleDetail);
                 param.append("surplusCount", item.surplusCount);
                 param.append("totalCount", item.totalCount);
-                param.append("startDate", item.startDate.getYear() + "-" + item.startDate.getMonth() +"-"+ item.startDate.getDay() + " " + (item.startDate.getHours +1)+":" + item.startDate.getMinutes+":" +item.startDate.getSeconds);
-                param.append("endDate", item.endDate + " " +item.endTime);
-                //param.append('chunk','0');//添加form表单中其他数据
-                //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
+                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                 let config = {
                     headers:{'Content-Type':'multipart/form-data'}
                 };
@@ -369,8 +396,9 @@
                  var that = this;
                  this.$axios.post(this.$apiPath.basePath + this.$apiPath.addStore,param,config)
                     .then(function (res) {
-                        message.success('修改成功');
+                        message.success('添加成功');
                         that.getData();
+                        this.addVisible = true;
                     })
                     .catch(function (error) {
                         console.log(error);

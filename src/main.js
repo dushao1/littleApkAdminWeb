@@ -12,6 +12,7 @@ import "babel-polyfill";
 import Qs from 'qs';
 import {apiConfig} from "./components/common/apiPath";
 
+
 Vue.config.productionTip = false
 Vue.use(ElementUI, {
     size: 'small'

@@ -2,19 +2,20 @@
 let apiConfig= {
         
   // baseIp:'yjsc.2012626.com',
-  // basePath: 'https://yjsc.2012626.com:8443/yjsc',
+  // basePath: 'http://yjsc.2012626.com/yjsc',
   // socketPath:'ws://yjsc.2012626.com/yjsc/websocket',
 
   baseIp: 'localhost',
-  basePath: 'http://localhost:8804/CiotemsYzzn',
-  socketPath: 'ws://localhost:8804/CiotemsYzzn/websocket',
+  basePath: 'http://localhost:8804/yjsc',
+  socketPath: 'ws://localhost:8804/yjsc/websocket',
   login: '/admin/login',
   addNoChekc:'/admin/addNoCheck',
   getNoCheckList:'/admin/getNoCheckList',
   deleteNoCheck:'/admin/deleteNoCheck',
   allStore:'/store/allStore',
   updateStore:'/backgroundStore/updateStroe',
-  addStore:'/backgroundStore/addStore'
+  addStore:'/backgroundStore/addStore',
+  allUsers:'/backgroundAdmin/allUsers'
 };
 
 export {apiConfig}
