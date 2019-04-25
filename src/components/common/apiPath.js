@@ -15,7 +15,8 @@ let apiConfig= {
   allStore:'/store/allStore',
   updateStore:'/backgroundStore/updateStroe',
   addStore:'/backgroundStore/addStore',
-  allUsers:'/backgroundAdmin/allUsers'
+  allUsers:'/backgroundAdmin/allUsers',
+  messageRecordList:'/admin/messageRecordList'
 };
 
 export {apiConfig}

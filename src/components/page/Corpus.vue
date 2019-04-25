@@ -15,20 +15,37 @@
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
-            <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
-                <el-table-column prop="date" label="日期" sortable width="150">
+                <el-table-column prop="createTime" label="日期" sortable width="180" :formatter="dateFormatter">
                 </el-table-column>
-                <el-table-column prop="name" label="姓名" width="120">
+                <el-table-column prop="mobile" label="手机号" width="120">
                 </el-table-column>
-                <el-table-column prop="address" label="地址" :formatter="formatter">
+                <el-table-column prop="voiceContent" label="内容" >
                 </el-table-column>
-                <el-table-column label="操作" width="180" align="center">
+                <el-table-column label="操作" width="240" align="center">
                     <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-add" class="green" @click="handleDelete(scope.$index, scope.row)">播放音频</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
+                
+                 <el-table :data="backList" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55" align="center"></el-table-column>
+                    <el-table-column prop="createTime" label="日期" sortable width="150">
+                    </el-table-column>
+                    <el-table-column prop="creator" label="服务商名称" width="120">
+                    </el-table-column>
+                    <el-table-column prop="content" label="内容" >
+                    </el-table-column>
+                    <!-- <el-table-column label="操作" width="180" align="center">
+                        <template slot-scope="scope">
+                            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        </template>
+                    </el-table-column> -->
+                </el-table>
             </el-table>
             <div class="pagination">
                 <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
@@ -68,6 +85,7 @@
 </template>
 
 <script>
+import {_public} from '../common/utils.js'
     export default {
         name: 'basetable',
         data() {
@@ -95,23 +113,23 @@
         },
         computed: {
             data() {
-                return this.tableData.filter((d) => {
-                    let is_del = false;
-                    for (let i = 0; i < this.del_list.length; i++) {
-                        if (d.name === this.del_list[i].name) {
-                            is_del = true;
-                            break;
-                        }
-                    }
-                    if (!is_del) {
-                        if (d.address.indexOf(this.select_cate) > -1 &&
-                            (d.name.indexOf(this.select_word) > -1 ||
-                                d.address.indexOf(this.select_word) > -1)
-                        ) {
-                            return d;
-                        }
-                    }
-                })
+                // return this.tableData.filter((d) => {
+                //     // let is_del = false;
+                //     // for (let i = 0; i < this.del_list.length; i++) {
+                //     //     if (d.name === this.del_list[i].name) {
+                //     //         is_del = true;
+                //     //         break;
+                //     //     }
+                //     // }
+                //     // if (!is_del) {
+                //     //     if (d.address.indexOf(this.select_cate) > -1 &&
+                //     //         (d.name.indexOf(this.select_word) > -1 ||
+                //     //             d.address.indexOf(this.select_word) > -1)
+                //     //     ) {
+                //     //         return d;
+                //     //     }
+                //     // }
+                // })
             }
         },
         methods: {
@@ -120,23 +138,31 @@
                 this.cur_page = val;
                 this.getData();
             },
-            // 获取 easy-mock 的模拟数据
             getData() {
-                // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
-                if (process.env.NODE_ENV === 'development') {
-                    this.url = '/ms/table/list';
-                };
-                this.$axios.post(this.url, {
+                var _this = this;
+                // if (process.env.NODE_ENV === 'development') {
+                //     this.url = '/ms/table/list';
+                // };
+                this.$axios.get(this.$apiPath.basePath + this.$apiPath.messageRecordList, {
                     page: this.cur_page
                 }).then((res) => {
-                    this.tableData = res.data.list;
+                    if(res.data.status == 200){
+
+                        this.tableData = res.data.data.list;
+                    }
+                // console.log(JSON.stringify( res.data.data.list))
+
                 })
+                console.log(JSON.stringify(this.tableData))
             },
             search() {
                 this.is_search = true;
             },
             formatter(row, column) {
                 return row.address;
+            },
+            dateFormatter(row, column){
+                return _public.formatDate(row.createTime, 'yyyy-MM-dd hh:mm:ss');
             },
             filterTag(value, row) {
                 return row.tag === value;
@@ -208,6 +234,9 @@
     }
     .red{
         color: #ff0000;
+    }
+    .green{
+        color: #35e711;
     }
     .mr10{
         margin-right: 10px;
