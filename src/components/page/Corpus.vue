@@ -2,7 +2,7 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 基础表格</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 语料列表</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -23,49 +23,28 @@
                 </el-table-column>
                 <el-table-column prop="voiceContent" label="内容" >
                 </el-table-column>
-                <el-table-column label="操作" width="240" align="center">
+                <el-table-column label="操作" width="300" align="center">
                     <template slot-scope="scope">
-                        <el-button type="text" icon="el-icon-add" class="green" @click="handleDelete(scope.$index, scope.row)">播放音频</el-button>
+                        <el-button type="text" icon="el-icon-add" v-if="tableData[scope.$index].filePath != null && tableData[scope.$index].filePath != ''" class="green" @click="playVideo(scope.$index, scope.row)">播放音频</el-button>
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-send" @click="sendText(scope.$index, scope.row)">推送</el-button>
                         <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button type="text" icon="el-icon-list" class="red" @click="handleList(scope.$index, scope.row)">详情</el-button>
                     </template>
                 </el-table-column>
-                
-                 <el-table :data="backList" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
-                    <el-table-column type="selection" width="55" align="center"></el-table-column>
-                    <el-table-column prop="createTime" label="日期" sortable width="150">
-                    </el-table-column>
-                    <el-table-column prop="creator" label="服务商名称" width="120">
-                    </el-table-column>
-                    <el-table-column prop="content" label="内容" >
-                    </el-table-column>
-                    <!-- <el-table-column label="操作" width="180" align="center">
-                        <template slot-scope="scope">
-                            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                            <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                        </template>
-                    </el-table-column> -->
-                </el-table>
             </el-table>
             <div class="pagination">
-                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="1000">
+                <el-pagination background @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalCount">
                 </el-pagination>
             </div>
         </div>
 
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="日期">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date" value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="消息内容">
+                    <el-input v-model="form.content"></el-input>
                 </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
@@ -73,7 +52,38 @@
             </span>
         </el-dialog>
 
-        <!-- 删除提示框 -->
+        <!-- 回复列表 -->
+        <el-dialog title="回复" :visible.sync="listVisible"  center>
+            <el-table :data="listDate" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
+                <el-table-column type="selection" width="55" align="center"></el-table-column>
+                <el-table-column prop="createTime" label="日期" sortable width="180" :formatter="dateFormatter">
+                </el-table-column>
+                <el-table-column prop="creator" label="服务商名称" width="120">
+                </el-table-column>
+                <el-table-column prop="content" label="内容" >
+                </el-table-column>
+                <!-- <el-table-column label="操作" width="240" align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" icon="el-icon-add" class="green" @click="handleDelete(scope.$index, scope.row)">播放音频</el-button>
+                        <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column> -->
+            </el-table>
+            <el-button type="primary" @click="addBack">添加</el-button>
+        </el-dialog>
+          <el-dialog title="添加" :visible.sync="addVisible" width="30%">
+                <el-form  label-width="60px">
+                    <el-form-item label="内容">
+                    <el-input v-model="addContent" style="width: 100%;">></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="addVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addOne">确 定</el-button>
+                </span>
+            </el-dialog>
+        <!-- 回复内容 -->
         <el-dialog title="提示" :visible.sync="delVisible" width="300px" center>
             <div class="del-dialog-cnt">删除不可恢复，是否确定删除？</div>
             <span slot="footer" class="dialog-footer">
@@ -92,18 +102,21 @@ import {_public} from '../common/utils.js'
             return {
                 url: './vuetable.json',
                 tableData: [],
+                listDate:[],
                 cur_page: 1,
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
                 del_list: [],
+                totalCount:0,
                 is_search: false,
                 editVisible: false,
                 delVisible: false,
+                listVisible: false,
+                addVisible: false,
+                addContent:'',
                 form: {
-                    name: '',
-                    date: '',
-                    address: ''
+                    content: ''
                 },
                 idx: -1
             }
@@ -143,11 +156,11 @@ import {_public} from '../common/utils.js'
                 // if (process.env.NODE_ENV === 'development') {
                 //     this.url = '/ms/table/list';
                 // };
-                this.$axios.get(this.$apiPath.basePath + this.$apiPath.messageRecordList, {
+                this.$axios.get(this.$apiPath.basePath + this.$apiPath.messageRecordList+"?page="+this.cur_page+"&content="+this.select_word, {
                     page: this.cur_page
                 }).then((res) => {
                     if(res.data.status == 200){
-
+                        this.totalCount = res.data.data.totalCount;
                         this.tableData = res.data.data.list;
                     }
                 // console.log(JSON.stringify( res.data.data.list))
@@ -155,8 +168,41 @@ import {_public} from '../common/utils.js'
                 })
                 console.log(JSON.stringify(this.tableData))
             },
+            playVideo(index,row){
+                  this.audio = new Audio();
+                  this.audio.src =row.filePath
+                  this.audio.play();
+                  var self = this;
+                  this.audio.onended = function () {
+                    self.$message.success('第'+(index+1)+'条消息，播放完毕');
+                  }
+            },
+            addOne(){
+
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.addBack,{
+                    content:this.addContent,
+                    adminId:JSON.parse(localStorage.getItem("admin_info")).id,
+                    messageId:this.idx
+                }).then(res =>{
+                    if(res.data.status == 200){
+                        this.$message.success(`添加成功`);
+                        this.addVisible=false;
+                        this.addContent='';
+                        this.listVisible=false;
+                        this.getData();
+
+                    }
+                })
+            },
             search() {
-                this.is_search = true;
+                 this.$axios.get(this.$apiPath.basePath + this.$apiPath.messageRecordList+"?page="+this.cur_page+"&content="+this.select_word, {
+                    page: this.cur_page
+                }).then((res) => {
+                    if(res.data.status == 200){
+                        this.totalCount = res.data.data.totalCount;
+                        this.tableData = res.data.data.list;
+                    }
+                });
             },
             formatter(row, column) {
                 return row.address;
@@ -164,22 +210,42 @@ import {_public} from '../common/utils.js'
             dateFormatter(row, column){
                 return _public.formatDate(row.createTime, 'yyyy-MM-dd hh:mm:ss');
             },
+            addBack(){
+                this.addVisible = true;
+                this.addContent = '';
+            },
             filterTag(value, row) {
                 return row.tag === value;
             },
             handleEdit(index, row) {
                 this.idx = index;
+                console.log("index" + this.idx);
                 const item = this.tableData[index];
-                this.form = {
-                    name: item.name,
-                    date: item.date,
-                    address: item.address
-                }
+                this.form.content= item.voiceContent,
+                
                 this.editVisible = true;
+            },
+            sendText(index, row) {
+                console.log(this.tableData[index])
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.sendText,{
+                    id:this.tableData[index].id,
+                    updator:JSON.parse(localStorage.getItem("admin_info")).id
+                }).then(res =>{
+                    if(res.data.status == 200){
+                        this.$message.success(this.tableData[index].voiceContent+`推送成功`);
+                        this.getData();
+
+                    }
+                })
             },
             handleDelete(index, row) {
                 this.idx = index;
                 this.delVisible = true;
+            },
+            handleList(index, row) {
+                this.listDate = this.tableData[index].backList;
+                this.listVisible = true;
+                this.idx =  this.tableData[index].id;
             },
             delAll() {
                 const length = this.multipleSelection.length;
@@ -196,15 +262,32 @@ import {_public} from '../common/utils.js'
             },
             // 保存编辑
             saveEdit() {
-                this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateMessageInfo,{
+                    voiceContent:this.form.content,
+                    id:this.tableData[this.idx].id,
+                    updator:JSON.parse(localStorage.getItem("admin_info")).id
+                }).then(res =>{
+                    if(res.data.status == 200){
+                        this.editVisible = false;
+                        this.$message.success(`修改第 ${this.idx+1} 行成功`);
+                        this.getData();
+
+                    }
+                })
             },
             // 确定删除
             deleteRow(){
-                this.tableData.splice(this.idx, 1);
-                this.$message.success('删除成功');
-                this.delVisible = false;
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.deleteMessage,{
+                    id:this.tableData[this.idx].id,
+                    updator:JSON.parse(localStorage.getItem("admin_info")).id
+                }).then(res =>{
+                    if(res.data.status == 200){
+                        this.tableData.splice(this.idx, 1);
+                        this.$message.success('删除成功');
+                        this.delVisible = false;
+                    }
+                })
+              
             }
         }
     }

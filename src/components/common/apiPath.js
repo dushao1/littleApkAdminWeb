@@ -16,7 +16,11 @@ let apiConfig= {
   updateStore:'/backgroundStore/updateStroe',
   addStore:'/backgroundStore/addStore',
   allUsers:'/backgroundAdmin/allUsers',
-  messageRecordList:'/admin/messageRecordList'
+  messageRecordList:'/admin/messageRecordList',
+  addBack:'/admin/addBack',
+  updateMessageInfo:'/admin/updateMessageInfo',
+  deleteMessage:'/admin/deleteMessage',
+  sendText:'/admin/sendText'
 };
 
 export {apiConfig}
