@@ -20,7 +20,11 @@ let apiConfig= {
   addBack:'/admin/addBack',
   updateMessageInfo:'/admin/updateMessageInfo',
   deleteMessage:'/admin/deleteMessage',
-  sendText:'/admin/sendText'
+  sendText:'/admin/sendText',
+  getBanner:'/admin/getBanner',
+  addBanner:'/admin/addBanner',
+  updateBanner:'/admin/updateBanner',
+  deleteBanner:'/admin/deleteBanner'
 };
 
 export {apiConfig}

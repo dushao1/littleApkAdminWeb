@@ -2,42 +2,25 @@
     <div class="table">
         <div class="crumbs">
             <el-breadcrumb separator="/">
-                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 内容列表</el-breadcrumb-item>
+                <el-breadcrumb-item><i class="el-icon-lx-cascades"></i> 轮播管理</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
          <div class="handle-box">
-            <!-- <el-button type="primary" icon="delete" class="handle-del mr10" @click="delAll">批量删除</el-button> -->
-            <!-- <el-select v-model="select_cate" placeholder="筛选省份" class="handle-select mr10">
-            <el-option key="1" label="广东省" value="广东省"></el-option>
-            <el-option key="2" label="湖南省" value="湖南省"></el-option>
-            </el-select> -->
             <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <div class="container">
             <el-table :data="data" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
-                 <el-table-column prop="sId" label="id" width="100">
+                 <el-table-column prop="id" label="id" width="100">
                 </el-table-column>
-                <el-table-column prop="title" label="标题" width="150">
+                <el-table-column prop="bannerTitle" label="标题" width="150">
                 </el-table-column>
-               <el-table-column prop="firstImg" label="首图" min-width="70px" >
+               <el-table-column prop="bannerUrl" label="图片" min-width="70px" >
                     <!-- 图片的显示 -->
                     <template   slot-scope="scope">            
-                         <img :src="scope.row.firstImg"  min-width="70" height="70px" />
+                         <img :src="scope.row.bannerUrl"  min-width="70" height="70px" />
                     </template>         
                 </el-table-column> 
-               <el-table-column prop="detailImg" label="详情图" min-width="70px" >
-                    <!-- 图片的显示 -->
-                    <template   slot-scope="scope">            
-                         <img :src="scope.row.detailImg"  min-width="70" height="70px" />
-                    </template>         
-                </el-table-column> 
-                 <el-table-column prop="titleDetail" label="描述" width="850">
-                </el-table-column>
-                <el-table-column prop="surplusCount" label="剩余红包数" width="120">
-                </el-table-column>
-                <el-table-column prop="totalCount" label="红包总数">
-                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -59,11 +42,8 @@
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="描述" >
-                    <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input>
-                </el-form-item>
 
-                 <el-form-item label="首图" label-width="7%" style="text-align:left">
+                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
                         <img :src="cropImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
@@ -71,39 +51,7 @@
                         </div>
                     </div>
                  </el-form-item>
-                <el-form-item label="详情图" label-width="7%" style="text-align:left">
-                     <div class="crop-demo">
-                        <img :src="detailImg" class="pre-img">
-                        <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setDetailImage"/>
-                        </div>
-                    </div>
-                 </el-form-item>
 
-                 <el-form-item label="开始时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <!-- <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker placeholder="选择时间" v-model="form.startTime" style="width: 100%;"></el-time-picker>
-                    </el-col> -->
-                </el-form-item>
-                <el-form-item label="结束时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                    <!-- <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
-                    </el-col> -->
-                </el-form-item>
-                <el-form-item label="剩余红包数" label-width="8%" style="text-align:left">
-                    <el-input v-model="form.surplusCount" ></el-input>
-                </el-form-item>
-                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
-                    <el-input v-model="form.totalCount"></el-input>
-                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
@@ -116,11 +64,8 @@
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
-                <el-form-item label="描述" >
-                    <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input>
-                </el-form-item>
 
-                 <el-form-item label="首图" label-width="7%" style="text-align:left">
+                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
                         <img :src="cropImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
@@ -128,28 +73,7 @@
                         </div>
                     </div>
                  </el-form-item>
-                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
-                     <div class="crop-demo">
-                        <img :src="cropDetailImg" class="pre-img">
-                        <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setDetailImage"/>
-                        </div>
-                    </div>
-                 </el-form-item>
 
-                 <el-form-item label="开始时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="结束时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                </el-form-item>
-                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
-                    <el-input v-model="form.totalCount"></el-input>
-                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
@@ -157,35 +81,18 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="添加裁剪首图片" :visible.sync="addImgVisible" width="30%">
+        <el-dialog title="裁剪图片" :visible.sync="addImgVisible" width="30%">
             <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelAdd">取 消</el-button>
                 <el-button type="primary" @click="addImgVisible = false">确 定</el-button>
             </span>
         </el-dialog>
-
-        <el-dialog title="编辑裁剪首图片" :visible.sync="imgVisible" width="30%">
+        <el-dialog title="裁剪图片" :visible.sync="imgVisible" width="30%">
             <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelEdit">取 消</el-button>
                 <el-button type="primary" @click="imgVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog title="添加裁剪详情图片" :visible.sync="addDetailImgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgDetailSrc" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelDetailAdd">取 消</el-button>
-                <el-button type="primary" @click="addDetailImgVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog title="编辑裁剪详情图片" :visible.sync="imgDetailVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgDetailSrc" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelDetailEdit">取 消</el-button>
-                <el-button type="primary" @click="imgDetailVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -221,12 +128,8 @@
                 addVisible: false,
                 imgVisible: false,
                 addImgVisible: false,
-                addDetailImgVisible:false,
-                imgDetailVisible:false,
                 cropImg: '',
-                cropDetailImg:'',
                 imgSrc: '',
-                imgDetailSrc:'',
                 defaultSrc: require('../../assets/img/img.jpg'),
                 form: {
                     sId: '',
@@ -248,7 +151,6 @@
         created() {
             this.getData();
             this.cropImg = this.defaultSrc;
-            this.cropDetailImg = this.defaultSrc;
         },
         computed: {
             data() {
@@ -281,25 +183,11 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.addImgVisible = true;
-                    this.cropImg = event.target.result;
+                    this.imgSrc = event.target.result;
                     this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[0] = file;
-            },
-            setDetailImage(e){
-                const file = e.target.files[0];
-                if (!file.type.includes('image/')) {
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    this.addDetailImgVisible = true;
-                    this.cropDetailImg = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
-                };
-                reader.readAsDataURL(file);
-                this.fileList[1] = file;
             },
             imageuploaded(res) {
                 console.log(res)
@@ -313,40 +201,26 @@
             cropImage () {
                 this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
             },
-            cropDetailImage () {
-                this.cropDetailImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-            },
             cancelCrop(){
                 this.dialogVisible = false;
                 this.cropImg = this.defaultSrc;
-                this.cropDetailImg = this.defaultSrc;
             },
             cancelAdd(){
                 this.addImgVisible = false;
-                this.cropDetailImg = this.defaultSrc;
+                this.cropImg = this.defaultSrc;
             },
             cancelEdit(){
                 this.imgVisible = false;
-                this.cropDetailImg = this.defaultSrc;
-            },
-            cancelDetailAdd(){
-                this.addDetailImgVisible = false;
-                this.cropDetailImg = this.defaultSrc;
-            },
-            cancelDetailEdit(){
-                this.imgDetailVisible = false;
-                this.cropDetailImg = this.defaultSrc;
+                this.cropImg = this.defaultSrc;
             },
             // 分页导航;
             handleCurrentChange(val) {
                 this.cur_page = val;
                 this.getData();
             },
-            // 获取 easy-mock 的模拟数据
             getData() {
-                // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
                 var _this = this
-                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore+"?&page="+ this.cur_page +"&content=" + this.select_word)
+                this.$axios.get(this.$apiPath.basePath + this.$apiPath.getBanner+"?&page="+ this.cur_page +"&content=" + this.select_word)
                 .then(function (res) {
                     console.log(res.data.data);
                     _this.tableData = res.data.data.list;
@@ -363,31 +237,16 @@
                 console.log("角标"+index)
                 this.idx = index;
                 const item = this.tableData[index];
-                if(item.firstImg){
-                    this.cropImg = item.firstImg;
+                if(item.bannerUrl){
+                    this.cropImg = item.bannerUrl;
                 } else {
                     this.cropImg = require('../../assets/img/img.jpg');
                 }
-                if(item.detailImg){
-                    this.cropDetailImg = item.detailImg;
-                } else {
-                    this.cropDetailImg = require('../../assets/img/img.jpg');
-                }
                 console.log(this.defaultSrc);
                 this.form = {
-                    sId: item.sId,
-                    title: item.title,
-                    titleDetail: item.titleDetail,
-                    firstImg: item.firstImg,
-                    detailImg: item.detailImg,
-                    endTime: item.endTime,
-                    startTime: item.startTime,
-                    surplusCount: item.surplusCount,
-                    totalCount: item.totalCount,
-                    status: item.status,
-                    startDate:item.startTime,
-                    endDate:item.endTime,
-                    cropDetailImg:item.detailImg
+                    id: item.id,
+                    title: item.bannerTitle,
+                    bannerUrl: item.bannerUrl,
                 }
                 
                 this.editVisible = true;
@@ -425,13 +284,8 @@
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
                 param.append('file',this.fileList[0]);//通过append向form对象添加数据 
-                param.append("title", item.title);
-                param.append("titleDetail", item.titleDetail);
-                param.append("surplusCount", item.surplusCount);
-                param.append("totalCount", item.totalCount);
-                param.append("sId", tableItem.sId);
-                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                param.append("bannerTitle", item.title);
+                param.append("id", tableItem.id);
                 //param.append('chunk','0');//添加form表单中其他数据
                 //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
                 let config = {
@@ -441,7 +295,7 @@
                  var querystring = this.$Qs;
                  var message = this.$message;
                  var that = this;
-                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,param,config)
+                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateBanner,param,config)
                     .then(function (res) {
                         message.success('修改成功');
                         that.getData();
@@ -457,13 +311,7 @@
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
                 param.append('file',this.fileList[0]);//通过append向form对象添加数据 
-                param.append('detailFile',this.fileList[1]);//通过append向form对象添加数据 
                 param.append("title", item.title);
-                param.append("titleDetail", item.titleDetail);
-                param.append("surplusCount", item.totalCount);
-                param.append("totalCount", item.totalCount);
-                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                 let config = {
                     headers:{'Content-Type':'multipart/form-data'}
                 };
@@ -471,11 +319,11 @@
                  var querystring = this.$Qs;
                  var message = this.$message;
                  var that = this;
-                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.addStore,param,config)
+                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.addBanner,param,config)
                     .then(function (res) {
                         message.success('添加成功');
                         that.getData();
-                        this.addVisible = true;
+                        that.addVisible = false;
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -486,13 +334,16 @@
                 this.delVisible = false;
                 const tableItem = this.tableData[this.idx];
                 var data = {
-                    status: -1,
-                    sId: tableItem.sId
+                    state: -1,
+                    id: tableItem.id
                  }
                  var querystring = this.$Qs;
                  var message = this.$message;
                  var that = this;
-                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,querystring.stringify(data))
+                   let config = {
+                    headers:{'Content-Type': 'application/json'}
+                };
+                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.deleteBanner,data,config)
                     .then(function (res) {
                         message.success('删除成功');
                         that.getData();

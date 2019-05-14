@@ -30,6 +30,11 @@ export default new Router({
                     meta: { title: '内容管理' }
                 },
                 {
+                    path: '/banners',
+                    component: resolve => require(['../components/page/banners.vue'], resolve),
+                    meta: { title: '内容管理' }
+                },
+                {
                     path: '/noCheck',
                     component: resolve => require(['../components/page/NoCheck.vue'], resolve),
                     meta: { title: '免审核列表' }

@@ -69,15 +69,20 @@
                         title: '内容管理'
                     },
                     {
-                        icon: 'el-icon-lx-home',
-                        index: 'noCheck',
-                        title: '免审核列表'
+                        icon: 'el-icon-lx-cascades',
+                        index: 'banners',
+                        title: '跑马灯管理'
                     },
-                    {
-                        icon: 'el-icon-lx-copy',
-                        index: 'corpus',
-                        title: '语料列表'
-                    },
+                    // {
+                    //     icon: 'el-icon-lx-home',
+                    //     index: 'noCheck',
+                    //     title: '免审核列表'
+                    // },
+                    // {
+                    //     icon: 'el-icon-lx-copy',
+                    //     index: 'corpus',
+                    //     title: '语料列表'
+                    // },
 
 
 
