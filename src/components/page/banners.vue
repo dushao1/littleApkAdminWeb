@@ -220,7 +220,7 @@
             },
             getData() {
                 var _this = this
-                this.$axios.get(this.$apiPath.basePath + this.$apiPath.getBanner+"?&page="+ this.cur_page +"&content=" + this.select_word)
+                this.$axios.get(this.$apiPath.basePath + this.$apiPath.getBanner+"?isAdmin=1&page="+ this.cur_page +"&content=" + this.select_word)
                 .then(function (res) {
                     console.log(res.data.data);
                     _this.tableData = res.data.data.list;

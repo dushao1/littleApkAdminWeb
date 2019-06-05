@@ -32,8 +32,8 @@
                          <img :src="scope.row.detailImg"  min-width="70" height="70px" />
                     </template>         
                 </el-table-column> 
-                 <el-table-column prop="titleDetail" label="描述" width="850">
-                </el-table-column>
+                 <!-- <el-table-column prop="titleDetail" label="描述" width="850">
+                </el-table-column> -->
                 <el-table-column prop="surplusCount" label="剩余红包数" width="120">
                 </el-table-column>
                 <el-table-column prop="totalCount" label="红包总数">
@@ -54,13 +54,14 @@
             </div>
         </div>
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="50%">
+        <el-dialog title="编辑" :visible.sync="editVisible" width="50%"  :before-close="handleClose">
             <el-form ref="form" :model="form" label-width="50px">
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
                 <el-form-item label="描述" >
-                    <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input>
+                    <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
+                     <quill-editor ref="myTextEditor" v-model="form.titleDetail" ></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -73,16 +74,16 @@
                  </el-form-item>
                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
-                        <img :src="detailImg" class="pre-img">
+                        <img :src="cropDetailImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setDetailImage"/>
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setIndexDetailImage"/>
                         </div>
                     </div>
                  </el-form-item>
 
                  <el-form-item label="开始时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startDate" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
                     <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
@@ -91,7 +92,7 @@
                 </el-form-item>
                 <el-form-item label="结束时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
                     <!-- <el-col class="line" :span="2">-</el-col>
                     <el-col :span="11">
@@ -111,18 +112,19 @@
             </span>
         </el-dialog>
         <!-- 添加弹出框 -->
-         <el-dialog title="添加" :visible.sync="addVisible" width="50%">
+         <el-dialog title="添加" :visible.sync="addVisible" width="50%"  :before-close="handleClose">
             <el-form ref="form" :model="form" label-width="50px">
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
                 <el-form-item label="描述" >
-                    <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input>
+                    <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
+                    <quill-editor ref="myTextEditor" v-model="form.titleDetail" :options="editorOption"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
-                        <img :src="cropImg" class="pre-img">
+                        <img :src="addIndexImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
                             <input  class="crop-input" type="file" name="file" accept="image/*" @change="setAddImage"/>
                         </div>
@@ -130,7 +132,7 @@
                  </el-form-item>
                  <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
-                        <img :src="cropDetailImg" class="pre-img">
+                        <img :src="addDetailImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
                             <input  class="crop-input" type="file" name="file" accept="image/*" @change="setDetailImage"/>
                         </div>
@@ -139,12 +141,12 @@
 
                  <el-form-item label="开始时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="结束时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
-                        <el-date-picker type="date" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
@@ -158,31 +160,31 @@
         </el-dialog>
 
         <el-dialog title="添加裁剪首图片" :visible.sync="addImgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='cropper' :src="addIndexImg" :ready="addIndexImgM" :zoom="addIndexImgM" :cropmove="addIndexImgM" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelAdd">取 消</el-button>
                 <el-button type="primary" @click="addImgVisible = false">确 定</el-button>
             </span>
         </el-dialog>
-
-        <el-dialog title="编辑裁剪首图片" :visible.sync="imgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancelEdit">取 消</el-button>
-                <el-button type="primary" @click="imgVisible = false">确 定</el-button>
-            </span>
-        </el-dialog>
-
+        
         <el-dialog title="添加裁剪详情图片" :visible.sync="addDetailImgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgDetailSrc" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='addIndexCropper' :src="addDetailImg" :ready="addDetailImage" :zoom="addDetailImage" :cropmove="addDetailImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelDetailAdd">取 消</el-button>
                 <el-button type="primary" @click="addDetailImgVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
+        <el-dialog title="编辑裁剪首图片" :visible.sync="imgVisible" width="30%">
+            <vue-cropper ref='editcropper' :src="cropImg" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancelEdit">取 消</el-button>
+                <el-button type="primary" @click="imgVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
         <el-dialog title="编辑裁剪详情图片" :visible.sync="imgDetailVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgDetailSrc" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='addCropper' :src="cropDetailImg" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelDetailEdit">取 消</el-button>
                 <el-button type="primary" @click="imgDetailVisible = false">确 定</el-button>
@@ -202,7 +204,11 @@
 
 <script>
  import VueCropper  from 'vue-cropperjs';
- import {_public} from '../common/utils.js'
+  import 'quill/dist/quill.core.css';
+    import 'quill/dist/quill.snow.css';
+    import 'quill/dist/quill.bubble.css';
+ import {_public} from '../common/utils.js';
+import { quillEditor } from 'vue-quill-editor';
     export default {
         name: 'baseTable',
         data() {
@@ -226,8 +232,14 @@
                 cropImg: '',
                 cropDetailImg:'',
                 imgSrc: '',
+                imgIndexSrc:'',
                 imgDetailSrc:'',
+                addIndexImg:'',
+                addDetailImg:'',
                 defaultSrc: require('../../assets/img/img.jpg'),
+                editorOption: {
+                    placeholder: 'Hello World'
+                },
                 form: {
                     sId: '',
                     title: '',
@@ -256,7 +268,8 @@
             }
         },
         components:{
-            VueCropper
+            VueCropper,
+            quillEditor
         },
         methods: {
             setImage(e){
@@ -267,8 +280,8 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.imgVisible = true;
-                    this.imgSrc = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
+                    this.cropImg = event.target.result;
+                    this.$refs.editcropper && this.$refs.editcropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[0] = file;
@@ -281,7 +294,7 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.addImgVisible = true;
-                    this.cropImg = event.target.result;
+                    this.addIndexImg = event.target.result;
                     this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
@@ -295,8 +308,22 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.addDetailImgVisible = true;
-                    this.cropDetailImg = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
+                    this.addDetailImg = event.target.result;
+                    this.$refs.addIndexCropper && this.$refs.addIndexCropper.replace(event.target.result);
+                };
+                reader.readAsDataURL(file);
+                this.fileList[1] = file;
+            },
+            setIndexDetailImage(e){
+                const file = e.target.files[0];
+                if (!file.type.includes('image/')) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.imgDetailVisible = true;
+                    this.cropDetailImg= event.target.result;
+                    this.$refs.addCropper && this.$refs.addCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[1] = file;
@@ -311,10 +338,16 @@
                 });
             },
             cropImage () {
-                this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+                this.cropImg = this.$refs.editcropper.getCroppedCanvas().toDataURL();
+            },
+            addIndexImgM () {
+                this.addIndexImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
             },
             cropDetailImage () {
-                this.cropDetailImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+                this.cropDetailImg = this.$refs.addCropper.getCroppedCanvas().toDataURL();
+            },
+            addDetailImage () {
+                this.addDetailImg = this.$refs.addIndexCropper.getCroppedCanvas().toDataURL();
             },
             cancelCrop(){
                 this.dialogVisible = false;
@@ -346,7 +379,7 @@
             getData() {
                 // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
                 var _this = this
-                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore+"?&page="+ this.cur_page +"&content=" + this.select_word)
+                this.$axios.post(this.$apiPath.basePath + this.$apiPath.allStore+"?isAdmin=1&page="+ this.cur_page +"&content=" + this.select_word)
                 .then(function (res) {
                     console.log(res.data.data);
                     _this.tableData = res.data.data.list;
@@ -373,7 +406,7 @@
                 } else {
                     this.cropDetailImg = require('../../assets/img/img.jpg');
                 }
-                console.log(this.defaultSrc);
+                console.log('123'+item.detailImg);
                 this.form = {
                     sId: item.sId,
                     title: item.title,
@@ -389,7 +422,11 @@
                     endDate:item.endTime,
                     cropDetailImg:item.detailImg
                 }
-                
+                this.$nextTick(function() {
+                    this.$refs.myQuillEditor.quill.enable(true);
+                    this.$refs.myQuillEditor.quill.blur();
+                });
+                console.log('handleForm'+JSON.stringify(this.form))
                 this.editVisible = true;
             },
             handleDelete(index, row) {
@@ -400,6 +437,10 @@
                 this.multipleSelection = val;
             },
             addStore(){
+                this.$nextTick(function() {
+                    this.$refs.myQuillEditor.quill.enable(true);
+                    this.$refs.myQuillEditor.quill.blur();
+                });
                 this.addVisible = true;
                  this.form = {
                     sId: '',
@@ -415,23 +456,28 @@
                     startDate:'',
                     endDate:''
                 }
-                this.cropImg = require('../../assets/img/img.jpg');
+                this.addIndexImg = require('../../assets/img/img.jpg');
+                this.addDetailImg = require('../../assets/img/img.jpg');
+                
+
             },
             // 保存编辑
             saveEdit(e) {
                 // this.$set(this.tableData, this.idx, this.form);
                 this.editVisible = false;
-                const item = this.form;
+                var item = this.form;
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
+                console.log('saveEdit:' + JSON.stringify(item));
                 param.append('file',this.fileList[0]);//通过append向form对象添加数据 
+                param.append('detailFile', this.fileList[1]);
                 param.append("title", item.title);
                 param.append("titleDetail", item.titleDetail);
                 param.append("surplusCount", item.surplusCount);
                 param.append("totalCount", item.totalCount);
                 param.append("sId", tableItem.sId);
-                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
+                param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
                 //param.append('chunk','0');//添加form表单中其他数据
                 //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
                 let config = {
@@ -480,6 +526,8 @@
                     .catch(function (error) {
                         console.log(error);
                     });
+                this.addVisible = false;
+                this.getData();
             },
             // 确定删除
             deleteRow(){
@@ -500,6 +548,23 @@
                     .catch(function (error) {
                         console.log(error);
                     });
+            },
+             onEditorChange({ editor, html, text }) {
+                this.content = html;
+            },
+            submit(){
+                console.log(this.content);
+                this.$message.success('提交成功！');
+            },
+             handleClose(done) {
+                this.$confirm('确认关闭？')
+                .then(_ => {
+                    done();
+                    this.$nextTick(function() {
+                    this.$refs.myQuillEditor.quill.enable(false);
+                });
+                })
+                .catch(_ => {});
             }
         }
     }
