@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                     <quill-editor ref="editEditor" v-model="form.titleDetail" id="editEditorId"></quill-editor>
+                     <quill-editor ref="editEditor" v-model="form.test" id="editEditorId"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -241,6 +241,7 @@ import { quillEditor } from 'vue-quill-editor';
                     sId: '',
                     title: '',
                     titleDetail: '',
+                    test: '',
                     firstImg: '',
                     detailImg: '',
                     endTime: '',
