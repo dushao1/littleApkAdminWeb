@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                     <quill-editor ref="myTextEditor" v-model="form.titleDetail" ></quill-editor>
+                     <quill-editor ref="editorEditor" v-model="form.titleDetail" id="editEditorId"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -119,7 +119,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                    <quill-editor ref="myTextEditor" v-model="form.titleDetail" :options="editorOption"></quill-editor>
+                    <quill-editor ref="addEditor" v-model="form.titleDetail" id="addEditorId"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -237,9 +237,6 @@ import { quillEditor } from 'vue-quill-editor';
                 addIndexImg:'',
                 addDetailImg:'',
                 defaultSrc: require('../../assets/img/img.jpg'),
-                editorOption: {
-                    placeholder: 'Hello World'
-                },
                 form: {
                     sId: '',
                     title: '',
@@ -270,6 +267,7 @@ import { quillEditor } from 'vue-quill-editor';
         components:{
             VueCropper,
             quillEditor
+            
         },
         methods: {
             setImage(e){
@@ -422,12 +420,16 @@ import { quillEditor } from 'vue-quill-editor';
                     endDate:item.endTime,
                     cropDetailImg:item.detailImg
                 }
-                this.$nextTick(function() {
-                    this.$refs.myQuillEditor.quill.enable(true);
-                    this.$refs.myQuillEditor.quill.blur();
-                });
+                // this.$refs.quillEdiotr.quill.enable(true);
+                // this.$refs.quillEdiotr.quill.blur();
                 console.log('handleForm'+JSON.stringify(this.form))
                 this.editVisible = true;
+                var that = this;
+                this.$nextTick(function() {
+                    that.$refs.editEditor.quill.enable(true);
+                    that.$refs.editEditor.quill.blur();
+                });
+                
             },
             handleDelete(index, row) {
                 this.idx = index;
@@ -437,10 +439,8 @@ import { quillEditor } from 'vue-quill-editor';
                 this.multipleSelection = val;
             },
             addStore(){
-                this.$nextTick(function() {
-                    this.$refs.myQuillEditor.quill.enable(true);
-                    this.$refs.myQuillEditor.quill.blur();
-                });
+                // this.$refs.quillEdiotr.quill.enable(true);
+                // this.$refs.quillEdiotr.quill.blur();
                 this.addVisible = true;
                  this.form = {
                     sId: '',
@@ -459,6 +459,11 @@ import { quillEditor } from 'vue-quill-editor';
                 this.addIndexImg = require('../../assets/img/img.jpg');
                 this.addDetailImg = require('../../assets/img/img.jpg');
                 
+                var that = this;
+                this.$nextTick(function() {
+                    that.$refs.addEditor.quill.enable(true);
+                    that.$refs.addEditor.quill.blur();
+                });
 
             },
             // 保存编辑
@@ -560,9 +565,8 @@ import { quillEditor } from 'vue-quill-editor';
                 this.$confirm('确认关闭？')
                 .then(_ => {
                     done();
-                    this.$nextTick(function() {
-                    this.$refs.myQuillEditor.quill.enable(false);
-                });
+                    this.$refs.addEditor.quill.enable(false);
+                    this.$refs.editEditor.quill.enable(false);
                 })
                 .catch(_ => {});
             }
