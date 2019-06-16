@@ -28,7 +28,19 @@
 </template>
 
 <script>
-
+const UserRole = () => import('@/components/page/UserRole.vue');
+const users= () => import('@/components/page/Users.vue');
+const contents= () => import('@/components/page/store_list_page.vue');
+const banners= () => import('@/components/page/banners.vue');
+const noCheck= () => import('@/components/page/NoCheck.vue');
+const corpus= () => import('@/components/page/Corpus.vue');
+var map = new Map();
+map.set('UserRole', UserRole);
+map.set('users', users);
+map.set('contents', contents);
+map.set('banners', banners);
+map.set('noCheck', noCheck);
+map.set('corpus', corpus);
 export default {
   data: function() {
     return {
@@ -59,8 +71,24 @@ export default {
             if (valid) {
               localStorage.setItem("ms_username", _this.ruleForm.username);
               localStorage.setItem("admin_info", JSON.stringify(res.data.data));
-              console.log(res.data.data);
-              _this.$router.push("/");
+              
+              _this.$axios.get(_this.$apiPath.basePath + _this.$apiPath.getRoleList+"?adminId="+res.data.data.id,{
+              }).then(result =>{
+                let menus = result.data.data;
+                localStorage.setItem("menus", JSON.stringify(menus));
+                let routs = [];
+                for(let item of menus){
+                    let tempRout={
+                      path: '/' + item.privlagePath,
+                      component:map.get(item.privlagePath),
+                      meta: { title: item.menuName },
+                      icon: item.icon
+                    };
+                    routs.push(tempRout);
+                }
+                _this.$router.addRoutes(routs);
+                _this.$router.push("/");
+              });
             } else {
               console.log("error submit!!");
               return false;

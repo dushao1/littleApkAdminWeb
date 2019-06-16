@@ -24,7 +24,8 @@ let apiConfig= {
   getBanner:'/admin/getBanner',
   addBanner:'/admin/addBanner',
   updateBanner:'/admin/updateBanner',
-  deleteBanner:'/admin/deleteBanner'
+  deleteBanner:'/admin/deleteBanner',
+  getRoleList:'/admin/getUserRoleMenus'
 };
 
 export {apiConfig}

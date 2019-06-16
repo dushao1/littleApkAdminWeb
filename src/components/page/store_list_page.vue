@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                     <quill-editor ref="editorEditor" v-model="form.titleDetail" id="editEditorId"></quill-editor>
+                     <quill-editor ref="editEditor" v-model="form.titleDetail" id="editEditorId"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -119,7 +119,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                    <quill-editor ref="addEditor" v-model="form.titleDetail" id="addEditorId"></quill-editor>
+                    <quill-editor ref="addEditor" v-model="form.addTitleDetail" id="addEditorId"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -236,11 +236,13 @@ import { quillEditor } from 'vue-quill-editor';
                 imgDetailSrc:'',
                 addIndexImg:'',
                 addDetailImg:'',
+                
                 defaultSrc: require('../../assets/img/img.jpg'),
                 form: {
                     sId: '',
                     title: '',
                     titleDetail: '',
+                    addTitleDetail:'',
                     firstImg: '',
                     detailImg: '',
                     endTime: '',
@@ -394,6 +396,7 @@ import { quillEditor } from 'vue-quill-editor';
                 console.log("角标"+index)
                 this.idx = index;
                 const item = this.tableData[index];
+                console.log("1234565"+JSON.stringify(item))
                 if(item.firstImg){
                     this.cropImg = item.firstImg;
                 } else {
@@ -446,6 +449,8 @@ import { quillEditor } from 'vue-quill-editor';
                     sId: '',
                     title: '',
                     titleDetail: '',
+                    addTitleDetail:'',
+                    addDetail:'',
                     firstImg: require('../../assets/img/img.jpg'),
                     detailImg: '',
                     endTime: '',
@@ -507,10 +512,11 @@ import { quillEditor } from 'vue-quill-editor';
                 const item = this.form;
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
+                console.log("123456" + JSON.stringify(item));
                 param.append('file',this.fileList[0]);//通过append向form对象添加数据 
                 param.append('detailFile',this.fileList[1]);//通过append向form对象添加数据 
                 param.append("title", item.title);
-                param.append("titleDetail", item.titleDetail);
+                param.append("titleDetail", item.addTitleDetail);
                 param.append("surplusCount", item.totalCount);
                 param.append("totalCount", item.totalCount);
                 param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));

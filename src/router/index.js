@@ -32,7 +32,7 @@ export default new Router({
                 {
                     path: '/banners',
                     component: resolve => require(['../components/page/banners.vue'], resolve),
-                    meta: { title: '内容管理' }
+                    meta: { title: '轮播管理' }
                 },
                 {
                     path: '/noCheck',
