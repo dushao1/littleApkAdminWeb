@@ -263,7 +263,7 @@ import { quillEditor } from 'vue-quill-editor';
         },
         computed: {
             data() {
-                 return this.tableData;
+                return this.tableData;
             }
         },
         components:{
