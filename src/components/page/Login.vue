@@ -87,7 +87,11 @@ export default {
                     routs.push(tempRout);
                 }
                 _this.$router.addRoutes(routs);
-                _this.$router.push("/");
+                if(menus[0].roleId == 1){
+                  _this.$router.push("/");
+                } else {
+                  _this.$router.push("/contents");
+                }
               });
             } else {
               console.log("error submit!!");

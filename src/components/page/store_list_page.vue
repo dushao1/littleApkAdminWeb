@@ -53,6 +53,56 @@
                 </el-pagination>
             </div>
         </div>
+         <!-- 添加弹出框 -->
+         <el-dialog title="添加" :visible.sync="addVisible" width="50%"  :before-close="handleClose">
+            <el-form ref="form" :model="form" label-width="50px">
+                <el-form-item label="标题" style="text-align:left">
+                    <el-input v-model="form.title"></el-input>
+                </el-form-item>
+                <el-form-item label="描述" >
+                    <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
+                    <quill-editor ref="addEditor" v-model="form.addTitleDetail" id="addEditorId"></quill-editor>
+                </el-form-item>
+
+                 <el-form-item label="首图" label-width="7%" style="text-align:left">
+                     <div class="crop-demo">
+                        <img :src="addIndexImg" class="pre-img">
+                        <div class="crop-demo-btn">选择图片
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setAddIndexImage"/>
+                        </div>
+                    </div>
+                 </el-form-item>
+                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
+                     <div class="crop-demo">
+                        <img :src="addDetailImg" class="pre-img">
+                        <div class="crop-demo-btn">选择图片
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setAddDetailImage"/>
+                        </div>
+                    </div>
+                 </el-form-item>
+
+                 <el-form-item label="开始时间" label-width="8%" style="text-align:left">
+                    <el-col :span="11">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="结束时间" label-width="8%" style="text-align:left">
+                    <el-col :span="11">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                </el-form-item>
+                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
+                    <el-input v-model="form.totalCount"></el-input>
+                </el-form-item>
+            </el-form>
+            <iframe id="mapPage" width="100%" height="800px" frameborder=0
+                src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=GQGBZ-PW3KK-LIHJC-AB3JY-SESOE-E2BEZ&referer=yjscTencent">
+            </iframe>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="saveAdd">确 定</el-button>
+            </span>
+        </el-dialog>
         <!-- 编辑弹出框 -->
         <el-dialog title="编辑" :visible.sync="editVisible" width="50%"  :before-close="handleClose">
             <el-form ref="form" :model="form" label-width="50px">
@@ -68,7 +118,7 @@
                      <div class="crop-demo">
                         <img :src="cropImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setImage"/>
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setEditIndexImage"/>
                         </div>
                     </div>
                  </el-form-item>
@@ -76,7 +126,7 @@
                      <div class="crop-demo">
                         <img :src="cropDetailImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setIndexDetailImage"/>
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setEditDetailImage"/>
                         </div>
                     </div>
                  </el-form-item>
@@ -106,61 +156,18 @@
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
             </el-form>
+             <iframe id="editPage" width="100%" height="800px" frameborder=0
+                src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=GQGBZ-PW3KK-LIHJC-AB3JY-SESOE-E2BEZ&referer=yjscTencent">
+            </iframe>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="editVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
         </el-dialog>
-        <!-- 添加弹出框 -->
-         <el-dialog title="添加" :visible.sync="addVisible" width="50%"  :before-close="handleClose">
-            <el-form ref="form" :model="form" label-width="50px">
-                <el-form-item label="标题" style="text-align:left">
-                    <el-input v-model="form.title"></el-input>
-                </el-form-item>
-                <el-form-item label="描述" >
-                    <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                    <quill-editor ref="addEditor" v-model="form.addTitleDetail" id="addEditorId"></quill-editor>
-                </el-form-item>
-
-                 <el-form-item label="首图" label-width="7%" style="text-align:left">
-                     <div class="crop-demo">
-                        <img :src="addIndexImg" class="pre-img">
-                        <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setAddImage"/>
-                        </div>
-                    </div>
-                 </el-form-item>
-                 <el-form-item label="详情图" label-width="7%" style="text-align:left">
-                     <div class="crop-demo">
-                        <img :src="addDetailImg" class="pre-img">
-                        <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setDetailImage"/>
-                        </div>
-                    </div>
-                 </el-form-item>
-
-                 <el-form-item label="开始时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="结束时间" label-width="8%" style="text-align:left">
-                    <el-col :span="11">
-                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
-                    </el-col>
-                </el-form-item>
-                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
-                    <el-input v-model="form.totalCount"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="addVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveAdd">确 定</el-button>
-            </span>
-        </el-dialog>
+       
 
         <el-dialog title="添加裁剪首图片" :visible.sync="addImgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="addIndexImg" :ready="addIndexImgM" :zoom="addIndexImgM" :cropmove="addIndexImgM" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='addIndexCropper' :src="addIndexImg" :ready="addIndexImgM" :zoom="addIndexImgM" :cropmove="addIndexImgM" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelAdd">取 消</el-button>
                 <el-button type="primary" @click="addImgVisible = false">确 定</el-button>
@@ -168,7 +175,7 @@
         </el-dialog>
         
         <el-dialog title="添加裁剪详情图片" :visible.sync="addDetailImgVisible" width="30%">
-            <vue-cropper ref='addIndexCropper' :src="addDetailImg" :ready="addDetailImage" :zoom="addDetailImage" :cropmove="addDetailImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='addDetailCropper' :src="addDetailImg" :ready="addDetailImage" :zoom="addDetailImage" :cropmove="addDetailImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelDetailAdd">取 消</el-button>
                 <el-button type="primary" @click="addDetailImgVisible = false">确 定</el-button>
@@ -176,7 +183,7 @@
         </el-dialog>
 
         <el-dialog title="编辑裁剪首图片" :visible.sync="imgVisible" width="30%">
-            <vue-cropper ref='editcropper' :src="cropImg" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='editIndexCropper' :src="cropImg" :ready="editIndexImage" :zoom="editIndexImage" :cropmove="editIndexImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelEdit">取 消</el-button>
                 <el-button type="primary" @click="imgVisible = false">确 定</el-button>
@@ -184,7 +191,7 @@
         </el-dialog>
 
         <el-dialog title="编辑裁剪详情图片" :visible.sync="imgDetailVisible" width="30%">
-            <vue-cropper ref='addCropper' :src="cropDetailImg" :ready="cropDetailImage" :zoom="cropDetailImage" :cropmove="cropDetailImage" style="width:100%;height:300px;"></vue-cropper>
+            <vue-cropper ref='editDetailCropper' :src="cropDetailImg" :ready="editDetailImage" :zoom="editDetailImage" :cropmove="editDetailImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelDetailEdit">取 消</el-button>
                 <el-button type="primary" @click="imgDetailVisible = false">确 定</el-button>
@@ -208,6 +215,7 @@
     import 'quill/dist/quill.snow.css';
     import 'quill/dist/quill.bubble.css';
  import {_public} from '../common/utils.js';
+
 import { quillEditor } from 'vue-quill-editor';
     export default {
         name: 'baseTable',
@@ -236,7 +244,8 @@ import { quillEditor } from 'vue-quill-editor';
                 imgDetailSrc:'',
                 addIndexImg:'',
                 addDetailImg:'',
-                
+                lat:0,
+                lon:0,
                 defaultSrc: require('../../assets/img/img.jpg'),
                 form: {
                     sId: '',
@@ -258,8 +267,18 @@ import { quillEditor } from 'vue-quill-editor';
         },
         created() {
             this.getData();
-            this.cropImg = this.defaultSrc;
-            this.cropDetailImg = this.defaultSrc;
+            // this.cropImg = this.defaultSrc;
+            // this.cropDetailImg = this.defaultSrc;
+            var that = this;
+            window.addEventListener('message', function(event) {
+                // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+                var loc = event.data;
+                if (loc && loc.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+                console.log('location', loc);
+                that.lon = loc.latlng.lng;
+                that.lat = loc.latlng.lat;
+                }
+            }, false);
         },
         computed: {
             data() {
@@ -272,22 +291,16 @@ import { quillEditor } from 'vue-quill-editor';
             
         },
         methods: {
-            setImage(e){
+            // message(event){
+            //    // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
+            //     var loc = event.data;
+            //     if (loc && loc.module == 'locationPicker') {//防止其他应用也会向该页面post信息，需判断module是否为'locationPicker'
+            //     console.log('location', loc);
+            //     }
+            // },
+            setAddIndexImage(e){
                 const file = e.target.files[0];
-                if (!file.type.includes('image/')) {
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    this.imgVisible = true;
-                    this.cropImg = event.target.result;
-                    this.$refs.editcropper && this.$refs.editcropper.replace(event.target.result);
-                };
-                reader.readAsDataURL(file);
-                this.fileList[0] = file;
-            },
-            setAddImage(e){
-                const file = e.target.files[0];
+                console.log("type： " + file.type)
                 if (!file.type.includes('image/')) {
                     return;
                 }
@@ -295,13 +308,14 @@ import { quillEditor } from 'vue-quill-editor';
                 reader.onload = (event) => {
                     this.addImgVisible = true;
                     this.addIndexImg = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
+                    this.$refs.addIndexCropper && this.$refs.addIndexCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
-                this.fileList[0] = file;
+                this.fileList[0] = file.name;
             },
-            setDetailImage(e){
+            setAddDetailImage(e){
                 const file = e.target.files[0];
+                console.log("type： " + file.type)
                 if (!file.type.includes('image/')) {
                     return;
                 }
@@ -309,13 +323,29 @@ import { quillEditor } from 'vue-quill-editor';
                 reader.onload = (event) => {
                     this.addDetailImgVisible = true;
                     this.addDetailImg = event.target.result;
-                    this.$refs.addIndexCropper && this.$refs.addIndexCropper.replace(event.target.result);
+                    this.$refs.addDetailCropper && this.$refs.addDetailCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
-                this.fileList[1] = file;
+                this.fileList[1] = file.name;
             },
-            setIndexDetailImage(e){
+            setEditIndexImage(e){
                 const file = e.target.files[0];
+                console.log("type： " + file.type)
+                if (!file.type.includes('image/')) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.imgVisible = true;
+                    this.cropImg = event.target.result;
+                    this.$refs.editIndexCropper && this.$refs.editIndexCropper.replace(event.target.result);
+                };
+                reader.readAsDataURL(file);
+                this.fileList[0] = file;
+            },
+            setEditDetailImage(e){
+                const file = e.target.files[0];
+                console.log("type： " + file.type)
                 if (!file.type.includes('image/')) {
                     return;
                 }
@@ -323,7 +353,7 @@ import { quillEditor } from 'vue-quill-editor';
                 reader.onload = (event) => {
                     this.imgDetailVisible = true;
                     this.cropDetailImg= event.target.result;
-                    this.$refs.addCropper && this.$refs.addCropper.replace(event.target.result);
+                    this.$refs.editDetailCropper && this.$refs.editDetailCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[1] = file;
@@ -337,17 +367,17 @@ import { quillEditor } from 'vue-quill-editor';
                     message: '图片上传接口上传失败，可更改为自己的服务器接口'
                 });
             },
-            cropImage () {
-                this.cropImg = this.$refs.editcropper.getCroppedCanvas().toDataURL();
-            },
             addIndexImgM () {
-                this.addIndexImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
-            },
-            cropDetailImage () {
-                this.cropDetailImg = this.$refs.addCropper.getCroppedCanvas().toDataURL();
+                this.addIndexImg = this.$refs.addIndexCropper.getCroppedCanvas().toDataURL();
             },
             addDetailImage () {
-                this.addDetailImg = this.$refs.addIndexCropper.getCroppedCanvas().toDataURL();
+                this.addDetailImg = this.$refs.addDetailCropper.getCroppedCanvas().toDataURL();
+            },
+            editIndexImage () {
+                this.cropImg = this.$refs.editIndexCropper.getCroppedCanvas().toDataURL();
+            },
+            editDetailImage () {
+                this.cropDetailImg = this.$refs.editDetailCropper.getCroppedCanvas().toDataURL();
             },
             cancelCrop(){
                 this.dialogVisible = false;
@@ -393,10 +423,8 @@ import { quillEditor } from 'vue-quill-editor';
                 this.getData();
             },
             handleEdit(index, row) {
-                console.log("角标"+index)
                 this.idx = index;
                 const item = this.tableData[index];
-                console.log("1234565"+JSON.stringify(item))
                 if(item.firstImg){
                     this.cropImg = item.firstImg;
                 } else {
@@ -432,6 +460,8 @@ import { quillEditor } from 'vue-quill-editor';
                     that.$refs.editEditor.quill.enable(true);
                     that.$refs.editEditor.quill.blur();
                 });
+                that.lat = 0;
+                that.lon = 0;
                 
             },
             handleDelete(index, row) {
@@ -469,76 +499,117 @@ import { quillEditor } from 'vue-quill-editor';
                     that.$refs.addEditor.quill.enable(true);
                     that.$refs.addEditor.quill.blur();
                 });
+                 that.lat = 0;
+                that.lon = 0;
 
             },
             // 保存编辑
             saveEdit(e) {
                 // this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                var item = this.form;
-                const tableItem = this.tableData[this.idx];
-                let param = new FormData(); //创建form对象
-                console.log('saveEdit:' + JSON.stringify(item));
-                param.append('file',this.fileList[0]);//通过append向form对象添加数据 
-                param.append('detailFile', this.fileList[1]);
-                param.append("title", item.title);
-                param.append("titleDetail", item.titleDetail);
-                param.append("surplusCount", item.surplusCount);
-                param.append("totalCount", item.totalCount);
-                param.append("sId", tableItem.sId);
-                param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
-                param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
-                //param.append('chunk','0');//添加form表单中其他数据
-                //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
-                let config = {
-                    headers:{'Content-Type':'multipart/form-data'}
-                };
-               
-                 var querystring = this.$Qs;
-                 var message = this.$message;
-                 var that = this;
-                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,param,config)
-                    .then(function (res) {
-                        message.success('修改成功');
-                        that.getData();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                 //创建form对象
+                if(this.lat != 0 && this.lon != 0){
+                    this.editVisible = false;
+                    var item = this.form;
+                    const tableItem = this.tableData[this.idx];
+                    let param = new FormData();
+                        console.log('1saveEdit: ' + this.lat+" long:" + this.lon);
+                    if(this.cropImg !=null && this.cropImg != '' && !this.cropImg.startsWith("http")){
+                        console.log('2saveEdit: ' + this.cropImg);
+                        let tempIndexFile = this.convertBase64UrlToBlob(this.cropImg);
+                        param.append('file', tempIndexFile);//通过append向form对象添加数据 
+                        param.append('indexFileName', "1."+this.cropImg.split(';')[0].split('/')[1]);
+                    }
+                    console.log('3saveEdit: ' + this.lat+" long:" + this.lon);
+                    if(this.cropDetailImg != null && this.cropDetailImg != ''&& !this.cropDetailImg.startsWith("http")){
+                        console.log('4saveEdit: ' + this.lat+" long:" + this.lon);
+                        let tempDetailFile = this.convertBase64UrlToBlob(this.cropDetailImg);
+                        param.append('detailFile', tempDetailFile);//通过append向form对象添加数据 
+                        param.append('detailFailName', "1."+this.cropDetailImg.split(';')[0].split('/')[1]);
+                    }
+                    param.append("title", item.title);
+                    param.append("titleDetail", item.titleDetail);
+                    param.append("surplusCount", item.surplusCount== null?0:item.surplusCount);
+                    param.append("totalCount", item.totalCount==null?0:item.totalCount);
+                    param.append("sId", tableItem.sId);
+                    param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("lat", this.lat);
+                    param.append("lng", this.lon);
+                    //param.append('chunk','0');//添加form表单中其他数据
+                    //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
+                    let config = {
+                        headers:{'Content-Type':'multipart/form-data'}
+                    };
+                
+                    var querystring = this.$Qs;
+                    var message = this.$message;
+                    var that = this;
+                    this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,param,config)
+                        .then(function (res) {
+                            message.success('修改成功');
+                            that.getData();
+                            that.lat = 0;
+                            that.lng = 0;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    this.fileList[0] = null;
+                    this.fileList[1] = null;
+                }else {
+                    this.$message.error('请选择定位地点');
+                }
+                
             },
             saveAdd(e) {
                 // this.$set(this.tableData, this.idx, this.form);
-                this.editVisible = false;
-                const item = this.form;
-                const tableItem = this.tableData[this.idx];
-                let param = new FormData(); //创建form对象
-                console.log("123456" + JSON.stringify(item));
-                param.append('file',this.fileList[0]);//通过append向form对象添加数据 
-                param.append('detailFile',this.fileList[1]);//通过append向form对象添加数据 
-                param.append("title", item.title);
-                param.append("titleDetail", item.addTitleDetail);
-                param.append("surplusCount", item.totalCount);
-                param.append("totalCount", item.totalCount);
-                param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                let config = {
-                    headers:{'Content-Type':'multipart/form-data'}
-                };
                
-                 var querystring = this.$Qs;
-                 var message = this.$message;
-                 var that = this;
-                 this.$axios.post(this.$apiPath.basePath + this.$apiPath.addStore,param,config)
-                    .then(function (res) {
-                        message.success('添加成功');
-                        that.getData();
-                        this.addVisible = true;
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-                this.addVisible = false;
-                this.getData();
+                // console.log("123456" + JSON.stringify(item));
+                if(this.lat != 0 && this.lon != 0){
+                     this.editVisible = false;
+                    const item = this.form;
+                    const tableItem = this.tableData[this.idx];
+                    let param = new FormData(); //创建form对象"
+                    let tempIndexFile = this.convertBase64UrlToBlob(this.addIndexImg);
+                    let tempDetailFile = this.convertBase64UrlToBlob(this.addDetailImg);
+
+                    param.append('file', tempIndexFile);//通过append向form对象添加数据 
+                    param.append('detailFile', tempDetailFile);//通过append向form对象添加数据 
+                    param.append('indexFileName', "1."+this.addIndexImg.split(';')[0].split('/')[1]);
+                    param.append('detailFailName', "1."+this.addDetailImg.split(';')[0].split('/')[1]);
+                    param.append("title", item.title);
+                    param.append("titleDetail", item.addTitleDetail);
+                    param.append("surplusCount", item.totalCount);
+                    param.append("totalCount", item.totalCount);
+                    param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("lat", this.lat);
+                    param.append("lng", this.lon);
+                    let config = {
+                        headers:{'Content-Type':'multipart/form-data'}
+                    };
+                
+                    var querystring = this.$Qs;
+                    var message = this.$message;
+                    var that = this;
+                    this.$axios.post(this.$apiPath.basePath + this.$apiPath.addStore,param,config)
+                        .then(function (res) {
+                            message.success('添加成功');
+                            that.getData();
+                            that.lat = 0;
+                            that.lng = 0;
+                            // this.addVisible = true;
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                    this.addVisible = false;
+                    this.getData();
+                }else {
+                    this.$message.error('请选择定位地点');
+                }
+                this.fileList[0] = null;
+                this.fileList[1] = null;
             },
             // 确定删除
             deleteRow(){
@@ -573,8 +644,20 @@ import { quillEditor } from 'vue-quill-editor';
                     done();
                     this.$refs.addEditor.quill.enable(false);
                     this.$refs.editEditor.quill.enable(false);
+                    this.fileList[0] = null;
+                    this.fileList[1] = null;
                 })
                 .catch(_ => {});
+            },
+            convertBase64UrlToBlob(urlData) {
+                let bytes = window.atob(urlData.split(',')[1]);//去掉url的头，并转换为byte
+                //处理异常,将ascii码小于0的转换为大于0
+                let ab = new ArrayBuffer(bytes.length);
+                let ia = new Uint8Array(ab);
+                for (var i = 0; i < bytes.length; i++) {
+                    ia[i] = bytes.charCodeAt(i);
+                }
+                return new Blob([ab], { type: 'image/jpeg' });
             }
         }
     }
