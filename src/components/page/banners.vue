@@ -45,9 +45,9 @@
 
                  <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
-                        <img :src="cropImg" class="pre-img">
+                        <img :src="editCropImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
-                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setImage"/>
+                            <input  class="crop-input" type="file" name="file" accept="image/*" @change="setEditImage"/>
                         </div>
                     </div>
                  </el-form-item>
@@ -67,7 +67,7 @@
 
                  <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
-                        <img :src="cropImg" class="pre-img">
+                        <img :src="addCropImg" class="pre-img">
                         <div class="crop-demo-btn">选择图片
                             <input  class="crop-input" type="file" name="file" accept="image/*" @change="setAddImage"/>
                         </div>
@@ -81,15 +81,15 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="裁剪图片" :visible.sync="addImgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+        <el-dialog title="添加裁剪图片" :visible.sync="addImgVisible" width="30%">
+            <vue-cropper ref='addCropper' :src="addCropImg" :ready="addCropImage" :zoom="addCropImage" :cropmove="addCropImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelAdd">取 消</el-button>
                 <el-button type="primary" @click="addImgVisible = false">确 定</el-button>
             </span>
         </el-dialog>
-        <el-dialog title="裁剪图片" :visible.sync="imgVisible" width="30%">
-            <vue-cropper ref='cropper' :src="imgSrc" :ready="cropImage" :zoom="cropImage" :cropmove="cropImage" style="width:100%;height:300px;"></vue-cropper>
+        <el-dialog title="编辑裁剪图片" :visible.sync="imgVisible" width="30%">
+            <vue-cropper ref='editCropper' :src="editCropImg" :ready="editCropImage" :zoom="editCropImage" :cropmove="editCropImage" style="width:100%;height:300px;"></vue-cropper>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="cancelEdit">取 消</el-button>
                 <el-button type="primary" @click="imgVisible = false">确 定</el-button>
@@ -128,6 +128,8 @@
                 addVisible: false,
                 imgVisible: false,
                 addImgVisible: false,
+                addCropImg:'',
+                editCropImg:'',
                 cropImg: '',
                 imgSrc: '',
                 defaultSrc: require('../../assets/img/img.jpg'),
@@ -161,7 +163,7 @@
             VueCropper
         },
         methods: {
-            setImage(e){
+            setEditImage(e){
                 const file = e.target.files[0];
                 if (!file.type.includes('image/')) {
                     return;
@@ -169,8 +171,8 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.imgVisible = true;
-                    this.imgSrc = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
+                    this.editCropImg = event.target.result;
+                    this.$refs.editCropper && this.$refs.editCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[0] = file;
@@ -183,8 +185,8 @@
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     this.addImgVisible = true;
-                    this.imgSrc = event.target.result;
-                    this.$refs.cropper && this.$refs.cropper.replace(event.target.result);
+                    this.addCropImg = event.target.result;
+                    this.$refs.addCropper && this.$refs.addCropper.replace(event.target.result);
                 };
                 reader.readAsDataURL(file);
                 this.fileList[0] = file;
@@ -198,8 +200,11 @@
                     message: '图片上传接口上传失败，可更改为自己的服务器接口'
                 });
             },
-            cropImage () {
-                this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+            addCropImage () {
+                this.addCropImg = this.$refs.addCropper.getCroppedCanvas().toDataURL();
+            },
+            editCropImage () {
+                this.editCropImg = this.$refs.editCropper.getCroppedCanvas().toDataURL();
             },
             cancelCrop(){
                 this.dialogVisible = false;
@@ -207,11 +212,11 @@
             },
             cancelAdd(){
                 this.addImgVisible = false;
-                this.cropImg = this.defaultSrc;
+                this.addCropImg = this.defaultSrc;
             },
             cancelEdit(){
                 this.imgVisible = false;
-                this.cropImg = this.defaultSrc;
+                this.editCropImg = this.defaultSrc;
             },
             // 分页导航;
             handleCurrentChange(val) {
@@ -238,9 +243,9 @@
                 this.idx = index;
                 const item = this.tableData[index];
                 if(item.bannerUrl){
-                    this.cropImg = item.bannerUrl;
+                    this.editCropImg = item.bannerUrl;
                 } else {
-                    this.cropImg = require('../../assets/img/img.jpg');
+                    this.editCropImg = require('../../assets/img/img.jpg');
                 }
                 console.log(this.defaultSrc);
                 this.form = {
@@ -274,7 +279,7 @@
                     startDate:'',
                     endDate:''
                 }
-                this.cropImg = require('../../assets/img/img.jpg');
+                this.addCropImg = require('../../assets/img/img.jpg');
             },
             // 保存编辑
             saveEdit(e) {
@@ -283,7 +288,12 @@
                 const item = this.form;
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
-                param.append('file',this.fileList[0]);//通过append向form对象添加数据 
+                 if(this.editCropImg != null && this.editCropImg != ''&& !this.editCropImg.startsWith("http")){
+                    let tempDetailFile = this.convertBase64UrlToBlob(this.editCropImg);
+                    param.append('file', tempDetailFile);//通过append向form对象添加数据 
+                    param.append('bannerName', "1."+this.editCropImg.split(';')[0].split('/')[1]);
+                }
+                // param.append('file',this.fileList[0]);//通过append向form对象添加数据 
                 param.append("bannerTitle", item.title);
                 param.append("id", tableItem.id);
                 //param.append('chunk','0');//添加form表单中其他数据
@@ -310,7 +320,12 @@
                 const item = this.form;
                 const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
-                param.append('file',this.fileList[0]);//通过append向form对象添加数据 
+                if(this.addCropImg != null && this.addCropImg != ''&& !this.addCropImg.startsWith("http")){
+                    let tempDetailFile = this.convertBase64UrlToBlob(this.addCropImg);
+                    param.append('file', tempDetailFile);//通过append向form对象添加数据 
+                    param.append('bannerName', "1."+this.addCropImg.split(';')[0].split('/')[1]);
+                }
+                // param.append('file',this.fileList[0]);//通过append向form对象添加数据 
                 param.append("title", item.title);
                 let config = {
                     headers:{'Content-Type':'multipart/form-data'}
@@ -351,6 +366,16 @@
                     .catch(function (error) {
                         console.log(error);
                     });
+            },
+            convertBase64UrlToBlob(urlData) {
+                let bytes = window.atob(urlData.split(',')[1]);//去掉url的头，并转换为byte
+                //处理异常,将ascii码小于0的转换为大于0
+                let ab = new ArrayBuffer(bytes.length);
+                let ia = new Uint8Array(ab);
+                for (var i = 0; i < bytes.length; i++) {
+                    ia[i] = bytes.charCodeAt(i);
+                }
+                return new Blob([ab], { type: 'image/jpeg' });
             }
         }
     }

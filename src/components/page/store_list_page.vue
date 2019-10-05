@@ -91,6 +91,11 @@
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
+                <el-form-item label="置顶截止" label-width="8%" style="text-align:left">
+                    <el-col :span="11">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;"></el-date-picker>
+                    </el-col>
+                </el-form-item>
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
@@ -149,7 +154,16 @@
                         <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
                     </el-col> -->
                 </el-form-item>
-                <el-form-item label="剩余红包数" label-width="8%" style="text-align:left">
+                <el-form-item label="置顶截止" label-width="8%" style="text-align:left">
+                    <el-col :span="11">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;" value-format="timestamp"></el-date-picker>
+                    </el-col>
+                    <!-- <el-col class="line" :span="2">-</el-col>
+                    <el-col :span="11">
+                        <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
+                    </el-col> -->
+                </el-form-item>
+                <el-form-item label="剩余红包" label-width="8%" style="text-align:left">
                     <el-input v-model="form.surplusCount" ></el-input>
                 </el-form-item>
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
@@ -260,7 +274,8 @@ import { quillEditor } from 'vue-quill-editor';
                     totalCount: '',
                     status: '',
                     startDate:'',
-                    endDate:''
+                    endDate:'',
+                    firstEndTime:''
                 },
                 idx: -1
             }
@@ -449,7 +464,8 @@ import { quillEditor } from 'vue-quill-editor';
                     status: item.status,
                     startDate:item.startTime,
                     endDate:item.endTime,
-                    cropDetailImg:item.detailImg
+                    cropDetailImg:item.detailImg,
+                    firstEndTime:item.firstEndTime
                 }
                 // this.$refs.quillEdiotr.quill.enable(true);
                 // this.$refs.quillEdiotr.quill.blur();
@@ -533,6 +549,7 @@ import { quillEditor } from 'vue-quill-editor';
                     param.append("sId", tableItem.sId);
                     param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("firstEndTime", _public.formatDate(item.firstEndTime, 'yyyy-MM-dd hh:mm:ss'));
                     param.append("lat", this.lat);
                     param.append("lng", this.lon);
                     //param.append('chunk','0');//添加form表单中其他数据
@@ -583,6 +600,7 @@ import { quillEditor } from 'vue-quill-editor';
                     param.append("totalCount", item.totalCount);
                     param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("firstEndTime", _public.formatDate(item.firstEndTime.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     param.append("lat", this.lat);
                     param.append("lng", this.lon);
                     let config = {
