@@ -30,6 +30,11 @@ export default new Router({
                     meta: { title: '内容管理' }
                 },
                 {
+                    path: '/packRecordList',
+                    component: resolve => require(['../components/page/packRecordList.vue'], resolve),
+                    meta: { title: '红包列表' }
+                },
+                {
                     path: '/banners',
                     component: resolve => require(['../components/page/banners.vue'], resolve),
                     meta: { title: '轮播管理' }

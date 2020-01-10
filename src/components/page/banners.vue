@@ -15,6 +15,8 @@
                 </el-table-column>
                 <el-table-column prop="bannerTitle" label="标题" width="150">
                 </el-table-column>
+                <el-table-column prop="storeName" label="关联" width="150">
+                </el-table-column>
                <el-table-column prop="bannerUrl" label="图片" min-width="70px" >
                     <!-- 图片的显示 -->
                     <template   slot-scope="scope">            
@@ -42,6 +44,13 @@
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
                 </el-form-item>
+                
+                <el-form-item label="关联到" label-width="7%">
+                    <el-select v-model="form.storeId" placeholder="请选择">
+                        <el-option key="index" label="无" value=""></el-option>
+                        <el-option v-for="(item,index) in storeList" :key="index" :label="item.title" :value="item.sId"></el-option>
+                    </el-select>
+                </el-form-item>
 
                  <el-form-item label="详情图" label-width="7%" style="text-align:left">
                      <div class="crop-demo">
@@ -63,6 +72,12 @@
             <el-form ref="form" :model="form" label-width="50px">
                 <el-form-item label="标题" style="text-align:left">
                     <el-input v-model="form.title"></el-input>
+                </el-form-item>
+             
+                <el-form-item label="关联到" label-width="7%">
+                    <el-select v-model="form.storeId" placeholder="请选择">
+                        <el-option v-for="(item,index) in storeList" :key="index" :label="item.title" :value="item.sId"></el-option>
+                    </el-select>
                 </el-form-item>
 
                  <el-form-item label="详情图" label-width="7%" style="text-align:left">
@@ -122,6 +137,7 @@
                 select_word: '',
                 del_list: [],
                 fileList:[],
+                storeList:[],
                 totalCount:0,
                 editVisible: false,
                 delVisible: false,
@@ -143,6 +159,7 @@
                     startTime: '',
                     surplusCount: '',
                     totalCount: '',
+                    storeId: '',
                     status: '',
                     startDate:'',
                     endDate:''
@@ -152,6 +169,7 @@
         },
         created() {
             this.getData();
+            this.getStoreList();
             this.cropImg = this.defaultSrc;
         },
         computed: {
@@ -227,9 +245,19 @@
                 var _this = this
                 this.$axios.get(this.$apiPath.basePath + this.$apiPath.getBanner+"?isAdmin=1&page="+ this.cur_page +"&content=" + this.select_word)
                 .then(function (res) {
-                    console.log(res.data.data);
                     _this.tableData = res.data.data.list;
                     _this.totalCount = res.data.data.totalCount;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            getStoreList() {
+                var _this = this
+                this.$axios.get(this.$apiPath.basePath + this.$apiPath.getAllStoreList)
+                .then(function (res) {
+                    _this.storeList = res.data.data;
+                    console.log( _this.storeList )
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -239,7 +267,6 @@
                 this.getData();
             },
             handleEdit(index, row) {
-                console.log("角标"+index)
                 this.idx = index;
                 const item = this.tableData[index];
                 if(item.bannerUrl){
@@ -247,11 +274,11 @@
                 } else {
                     this.editCropImg = require('../../assets/img/img.jpg');
                 }
-                console.log(this.defaultSrc);
                 this.form = {
                     id: item.id,
                     title: item.bannerTitle,
                     bannerUrl: item.bannerUrl,
+                    storeId:item.storeId
                 }
                 
                 this.editVisible = true;
@@ -275,6 +302,7 @@
                     startTime: '',
                     surplusCount: '',
                     totalCount: '',
+                    storeId:'',
                     status: '',
                     startDate:'',
                     endDate:''
@@ -283,7 +311,6 @@
             },
             // 保存编辑
             saveEdit(e) {
-                // this.$set(this.tableData, this.idx, this.form);
                 this.editVisible = false;
                 const item = this.form;
                 const tableItem = this.tableData[this.idx];
@@ -296,8 +323,7 @@
                 // param.append('file',this.fileList[0]);//通过append向form对象添加数据 
                 param.append("bannerTitle", item.title);
                 param.append("id", tableItem.id);
-                //param.append('chunk','0');//添加form表单中其他数据
-                //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
+                param.append('storeId',item.storeId);
                 let config = {
                     headers:{'Content-Type':'multipart/form-data'}
                 };
@@ -315,10 +341,8 @@
                     });
             },
             saveAdd(e) {
-                // this.$set(this.tableData, this.idx, this.form);
                 this.editVisible = false;
                 const item = this.form;
-                const tableItem = this.tableData[this.idx];
                 let param = new FormData(); //创建form对象
                 if(this.addCropImg != null && this.addCropImg != ''&& !this.addCropImg.startsWith("http")){
                     let tempDetailFile = this.convertBase64UrlToBlob(this.addCropImg);
@@ -327,6 +351,7 @@
                 }
                 // param.append('file',this.fileList[0]);//通过append向form对象添加数据 
                 param.append("title", item.title);
+                param.append('storeId',item.storeId);
                 let config = {
                     headers:{'Content-Type':'multipart/form-data'}
                 };

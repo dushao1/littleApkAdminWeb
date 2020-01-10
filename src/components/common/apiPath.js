@@ -8,6 +8,7 @@ let apiConfig= {
   // baseIp: 'localhost',
   // basePath: 'http://localhost:8804/yjsc',
   // socketPath: 'ws://localhost:8804/yjsc/websocket',
+
   login: '/admin/login',
   addNoChekc:'/admin/addNoCheck',
   getNoCheckList:'/admin/getNoCheckList',
@@ -26,7 +27,11 @@ let apiConfig= {
   updateBanner:'/admin/updateBanner',
   deleteBanner:'/admin/deleteBanner',
   getRoleList:'/admin/getUserRoleMenus',
-  updateUser:'/backgroundAdmin/updateAppUser'
+  updateUser:'/backgroundAdmin/updateAppUser',
+  getStorePackageRecord:'/storePackage/getStorePackageRecord',
+  getStorePackageRecordExportUrl:'/storePackage/getStorePackageRecordExportUrl',
+  getUserExportUrl:'/storePackage/getUserExportUrl',
+  getAllStoreList:'/admin/getAllStoreList'
 };
 
 export {apiConfig}

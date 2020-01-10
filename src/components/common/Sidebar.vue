@@ -38,21 +38,18 @@
             var _this = this;
             var routs = [];
             var result = JSON.parse(localStorage.getItem('menus'));
-            console.log("speader: " + localStorage.getItem('menus'))
-            console.log("123"+JSON.stringify(result))
-                for(let item of result){
-                    let tempRout={
-                      icon:   item.icon,
-                      index: item.privlageMenus,
-                      title: item.menuName 
-                    };
-                    routs.push(tempRout);
-                }
+            for(let item of result){
+                let tempRout={
+                    icon:   item.icon,
+                    index: item.privlageMenus,
+                    title: item.menuName 
+                };
+                routs.push(tempRout);
+            }
             let tempResult = {
                 collapse: false,
                 items: routs
             };
-            console.log("菜单2：" + JSON.stringify(tempResult))
             return tempResult;
 
             // return {
@@ -68,16 +65,16 @@
             //             index: 'userRole',
             //             title: '角色管理'
             //         },
-            //         {
-            //             icon: 'el-icon-rank',
-            //             index: 'roleMenu',
-            //             title: '菜单管理'
-            //         },
-            //         {
-            //             icon: 'el-icon-rank',
-            //             index: 'admin',
-            //             title: '服务商管理'
-            //         },
+            //         // {
+            //         //     icon: 'el-icon-rank',
+            //         //     index: 'roleMenu',
+            //         //     title: '菜单管理'
+            //         // },
+            //         // {
+            //         //     icon: 'el-icon-rank',
+            //         //     index: 'admin',
+            //         //     title: '服务商管理'
+            //         // },
             //         {
             //             icon: 'el-icon-lx-emoji',
             //             index: 'users',
@@ -90,9 +87,15 @@
             //         },
             //         {
             //             icon: 'el-icon-lx-cascades',
+            //             index: 'packRecordList',
+            //             title: '红包列表'
+            //         },
+            //         {
+            //             icon: 'el-icon-lx-cascades',
             //             index: 'banners',
             //             title: '跑马灯管理'
             //         },
+
             //         // {
             //         //     icon: 'el-icon-lx-home',
             //         //     index: 'noCheck',

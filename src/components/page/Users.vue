@@ -15,6 +15,7 @@
                 <el-button type="primary" icon="edit" class="handle-del mr10" @click="updateAll">批量修改</el-button>
                 <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button type="primary" icon="export" class="handle-del mr10" @click="exportSelect">导出</el-button>
             </div>
             <el-table :data="tableData" border class="table" ref="multipleTable" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
@@ -23,7 +24,9 @@
                 </el-table-column>
                 <el-table-column prop="sessionKey" label="sessionKey" width="210">
                 </el-table-column>
-                <el-table-column prop="mobile" label="手机号" >
+                <el-table-column prop="mobile" label="手机号"  sortable>
+                </el-table-column>
+                 <el-table-column prop="address" label="地址"  sortable>
                 </el-table-column>
                  <el-table-column prop="limitDays" label="限制天数" >
                 </el-table-column>
@@ -251,6 +254,24 @@ import {_public} from '../common/utils.js'
             },
             // 确定删除
             deleteRow(){
+            },
+            exportSelect() {
+                const length = this.multipleSelection.length;
+                var that = this;
+                if (length == 0) {
+                    this.$message.error("请选定后导出");
+                } else {
+                    let data = this.multipleSelection;
+                    this.$axios
+                        .post(
+                        this.$apiPath.basePath +
+                            this.$apiPath.getUserExportUrl , data
+                        )
+                        .then(function(res) {
+                            console.log(JSON.stringify(res.data));
+                            window.open(res.data.data);
+                        })
+                }
             }
         }
     }

@@ -41,7 +41,7 @@
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-                        <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        <el-button v-if="roleId == 1" type="text" icon="el-icon-delete" class="red"  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                    <quill-editor ref="addEditor" v-model="form.addTitleDetail" id="addEditorId"></quill-editor>
+                    <quill-editor ref="addEditor" v-model="form.addTitleDetail" id="addEditorId" :options="quillOption"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -91,7 +91,7 @@
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="置顶截止" label-width="8%" style="text-align:left">
+                <el-form-item v-if="roleId == 1" label="置顶截止" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;"></el-date-picker>
                     </el-col>
@@ -116,7 +116,7 @@
                 </el-form-item>
                 <el-form-item label="描述" >
                     <!-- <el-input rows="7" type="textarea" v-model="form.titleDetail" ></el-input> -->
-                     <quill-editor ref="editEditor" v-model="form.titleDetail" id="editEditorId"></quill-editor>
+                     <quill-editor ref="editEditor" v-model="form.titleDetail" id="editEditorId"  :options="quillOption"></quill-editor>
                 </el-form-item>
 
                  <el-form-item label="首图" label-width="7%" style="text-align:left">
@@ -154,7 +154,7 @@
                         <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
                     </el-col> -->
                 </el-form-item>
-                <el-form-item label="置顶截止" label-width="8%" style="text-align:left">
+                <el-form-item v-if="roleId == 1" label="置顶截止" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
@@ -224,18 +224,20 @@
 </template>
 
 <script>
- import VueCropper  from 'vue-cropperjs';
-  import 'quill/dist/quill.core.css';
+    import VueCropper  from 'vue-cropperjs';
+    import 'quill/dist/quill.core.css';
     import 'quill/dist/quill.snow.css';
     import 'quill/dist/quill.bubble.css';
- import {_public} from '../common/utils.js';
+    import quillConfig from '../common/quill-config.js';
+    import {_public} from '../common/utils.js';
 
-import { quillEditor } from 'vue-quill-editor';
+    import { quillEditor } from 'vue-quill-editor';
     export default {
         name: 'baseTable',
         data() {
             return {
                 url: './vuetable.json',
+                quillOption: quillConfig,
                 tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
@@ -258,6 +260,7 @@ import { quillEditor } from 'vue-quill-editor';
                 imgDetailSrc:'',
                 addIndexImg:'',
                 addDetailImg:'',
+                roleId:0,
                 lat:0,
                 lon:0,
                 defaultSrc: require('../../assets/img/img.jpg'),
@@ -294,6 +297,11 @@ import { quillEditor } from 'vue-quill-editor';
                 that.lat = loc.latlng.lat;
                 }
             }, false);
+            if(JSON.parse(localStorage.getItem('admin_info')).role.id == 1){
+                that.roleId = 1;
+                console.log("  adminInfo123 "+JSON.parse(localStorage.getItem('admin_info')));
+            }
+            console.log("  adminInfo "+JSON.parse(localStorage.getItem('admin_info')));
         },
         computed: {
             data() {
@@ -549,7 +557,9 @@ import { quillEditor } from 'vue-quill-editor';
                     param.append("sId", tableItem.sId);
                     param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
-                    param.append("firstEndTime", _public.formatDate(item.firstEndTime, 'yyyy-MM-dd hh:mm:ss'));
+                    if(this.roleId == 1 && item.firstEndTime != null){
+                        param.append("firstEndTime", _public.formatDate(item.firstEndTime, 'yyyy-MM-dd hh:mm:ss'));
+                    }
                     param.append("lat", this.lat);
                     param.append("lng", this.lon);
                     //param.append('chunk','0');//添加form表单中其他数据
@@ -600,7 +610,9 @@ import { quillEditor } from 'vue-quill-editor';
                     param.append("totalCount", item.totalCount);
                     param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
-                    param.append("firstEndTime", _public.formatDate(item.firstEndTime.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    if(this.roleId == 1  && item.firstEndTime != null){
+                        param.append("firstEndTime", _public.formatDate(item.firstEndTime.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    }
                     param.append("lat", this.lat);
                     param.append("lng", this.lon);
                     let config = {

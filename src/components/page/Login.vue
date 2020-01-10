@@ -34,6 +34,7 @@ const contents= () => import('@/components/page/store_list_page.vue');
 const banners= () => import('@/components/page/banners.vue');
 const noCheck= () => import('@/components/page/NoCheck.vue');
 const corpus= () => import('@/components/page/Corpus.vue');
+const packRecordList= () =>import('@/components/page/packRecordList.vue');
 var map = new Map();
 map.set('UserRole', UserRole);
 map.set('users', users);
@@ -41,6 +42,7 @@ map.set('contents', contents);
 map.set('banners', banners);
 map.set('noCheck', noCheck);
 map.set('corpus', corpus);
+map.set("packRecordList", packRecordList);
 export default {
   data: function() {
     return {
