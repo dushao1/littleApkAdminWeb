@@ -46,7 +46,7 @@
                 </el-form-item>
                 
                 <el-form-item label="关联到" label-width="7%">
-                    <el-select v-model="form.storeId" placeholder="请选择">
+                    <el-select v-model="form.storeId" placeholder="请选择" filterable :filter-method="dataFilter">
                         <el-option key="index" label="无" value=""></el-option>
                         <el-option v-for="(item,index) in storeList" :key="index" :label="item.title" :value="item.sId"></el-option>
                     </el-select>
@@ -75,7 +75,7 @@
                 </el-form-item>
              
                 <el-form-item label="关联到" label-width="7%">
-                    <el-select v-model="form.storeId" placeholder="请选择">
+                    <el-select v-model="form.storeId" placeholder="请选择" filterable :filter-method="dataFilter">
                         <el-option v-for="(item,index) in storeList" :key="index" :label="item.title" :value="item.sId"></el-option>
                     </el-select>
                 </el-form-item>
@@ -138,6 +138,7 @@
                 del_list: [],
                 fileList:[],
                 storeList:[],
+                allStoreList:[],
                 totalCount:0,
                 editVisible: false,
                 delVisible: false,
@@ -181,6 +182,25 @@
             VueCropper
         },
         methods: {
+            dataFilter(val){
+                this.value=val
+                console.log("输入内容：" + val);
+                if(val && val != null && val != ''){
+                    this.storeList=this.storeList.filter((item=>{
+                        if (!!~item.title.indexOf(val) || !!~item.title.toUpperCase().indexOf(val.toUpperCase())) {
+                            return true
+                        }
+                    }))
+
+                    console.log("索索结果"+this.storeList);
+                    if(this.storeList.length ==0){
+                        this.storeList = this.allStoreList;
+                    }
+                }else{
+                    this.storeList=this.allStoreList
+                }
+ 
+            },
             setEditImage(e){
                 const file = e.target.files[0];
                 if (!file.type.includes('image/')) {
@@ -257,6 +277,7 @@
                 this.$axios.get(this.$apiPath.basePath + this.$apiPath.getAllStoreList)
                 .then(function (res) {
                     _this.storeList = res.data.data;
+                    _this.allStoreList = res.data.data;
                     console.log( _this.storeList )
                 })
                 .catch(function (error) {
