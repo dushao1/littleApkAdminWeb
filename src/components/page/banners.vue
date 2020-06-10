@@ -46,7 +46,7 @@
                 </el-form-item>
                 
                 <el-form-item label="关联到" label-width="7%">
-                    <el-select v-model="form.storeId" placeholder="请选择" filterable :filter-method="dataFilter">
+                    <el-select v-model="form.storeId" placeholder="请选择" filterable >
                         <el-option key="index" label="无" value=""></el-option>
                         <el-option v-for="(item,index) in storeList" :key="index" :label="item.title" :value="item.sId"></el-option>
                     </el-select>

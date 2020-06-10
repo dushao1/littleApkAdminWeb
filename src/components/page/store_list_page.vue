@@ -99,6 +99,21 @@
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
+                <el-form-item v-model="form.allShowState" label-width="12%" label="是否全域展示">
+                    <template slot-scope="scope">
+                        <el-switch
+                            active-text="是"
+                            inactive-text="否"
+                            active-color="#5B7BFA"
+                            inactive-color="#dadde5"
+                            :active-value="1"
+                            :inactive-value="0"
+                            v-model="form.allShowState"
+                              
+                        >
+                        </el-switch>
+                    </template>
+                </el-form-item>
             </el-form>
             <iframe id="mapPage" width="100%" height="800px" frameborder=0
                 src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=GQGBZ-PW3KK-LIHJC-AB3JY-SESOE-E2BEZ&referer=yjscTencent">
@@ -168,6 +183,20 @@
                 </el-form-item>
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
+                </el-form-item>
+                <el-form-item v-model="form.allShowState" label-width="8%" label="是否全域展示">
+                    <template scope="scope">
+                    <el-switch
+                        active-text ="是"
+                        inactive-text = "否"
+                        active-color="#5B7BFA"
+                        inactive-color="#dadde5"
+                        :active-value="1"
+                        :inactive-value="0"
+                        v-model="form.allShowState"              
+                    >
+                    </el-switch>
+                    </template>
                 </el-form-item>
             </el-form>
              <iframe id="editPage" width="100%" height="800px" frameborder=0
@@ -278,7 +307,8 @@
                     status: '',
                     startDate:'',
                     endDate:'',
-                    firstEndTime:''
+                    firstEndTime:'',
+                    allShowState:0
                 },
                 idx: -1
             }
@@ -321,6 +351,10 @@
             //     console.log('location', loc);
             //     }
             // },
+            change(data,b,index){
+
+                alert(JSON.stringify(data) + "");
+            },
             setAddIndexImage(e){
                 const file = e.target.files[0];
                 console.log("type： " + file.type)
@@ -473,7 +507,8 @@
                     startDate:item.startTime,
                     endDate:item.endTime,
                     cropDetailImg:item.detailImg,
-                    firstEndTime:item.firstEndTime
+                    firstEndTime:item.firstEndTime,
+                    allShowState:item.allShowState
                 }
                 // this.$refs.quillEdiotr.quill.enable(true);
                 // this.$refs.quillEdiotr.quill.blur();
@@ -513,7 +548,8 @@
                     totalCount: '',
                     status: '',
                     startDate:'',
-                    endDate:''
+                    endDate:'',
+                    allShowState:1
                 }
                 this.addIndexImg = require('../../assets/img/img.jpg');
                 this.addDetailImg = require('../../assets/img/img.jpg');
@@ -555,6 +591,7 @@
                     param.append("surplusCount", item.surplusCount== null?0:item.surplusCount);
                     param.append("totalCount", item.totalCount==null?0:item.totalCount);
                     param.append("sId", tableItem.sId);
+                    param.append("allShowState",item.allShowState);
                     param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
                     if(this.roleId == 1 && item.firstEndTime != null){
@@ -608,6 +645,7 @@
                     param.append("titleDetail", item.addTitleDetail);
                     param.append("surplusCount", item.totalCount);
                     param.append("totalCount", item.totalCount);
+                    param.append("allShowState",item.allShowState);
                     param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     if(this.roleId == 1  && item.firstEndTime != null){
