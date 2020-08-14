@@ -402,8 +402,8 @@ export default {
               city.setOption(cityData);
 
               let devices = echarts.init(document.getElementById("devices"));
-              let devicesData = JSON.parse(JSON.stringify(option));
-              devicesData.legend.data = result.visit_uv.devices.map(o => {return o.name});
+              let devicesData = JSON.parse(JSON.stringify(cityOption));
+              devicesData.xAxis[0].data = result.visit_uv.devices.map(o => {return o.name.replace(/(^\s*)|(\s*$)/g, "")});
               devicesData.series[0].data = result.visit_uv.devices.map(o =>{return o.value});
               devices.setOption(devicesData);
 
@@ -438,9 +438,10 @@ export default {
               cityNew.setOption(cityNewData);
 
               let devicesNew = echarts.init(document.getElementById("devicesNew"));
-              let devicesNewData = JSON.parse(JSON.stringify(option));
-              devicesNewData.legend.data = result.visit_uv_new.devices.map(o => {return o.name});
+              let devicesNewData = JSON.parse(JSON.stringify(cityOption));
+              devicesNewData.xAxis[0].data = result.visit_uv_new.devices.map(o => {return o.name.replace(/(^\s*)|(\s*$)/g, "")});
               devicesNewData.series[0].data = result.visit_uv_new.devices.map(o =>{return o.value});
+              console.log(JSON.stringify(devicesNewData))
               devicesNew.setOption(devicesNewData);
 
               let agesNew = echarts.init(document.getElementById("agesNew"));
