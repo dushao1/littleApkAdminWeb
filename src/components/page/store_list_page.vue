@@ -109,7 +109,6 @@
                             :active-value="1"
                             :inactive-value="0"
                             v-model="form.allShowState"
-                              
                         >
                         </el-switch>
                     </template>
@@ -185,7 +184,7 @@
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
                 <el-form-item v-model="form.allShowState" label-width="8%" label="是否全域展示">
-                    <template scope="scope">
+                    <template >
                     <el-switch
                         active-text ="是"
                         inactive-text = "否"

@@ -8,8 +8,10 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "9cf-chart": "^1.0.20",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "echarts": "^4.8.0",
     "element-ui": "^2.4.11",
     "file-saver": "^2.0.2",
     "mavon-editor": "^2.6.17",

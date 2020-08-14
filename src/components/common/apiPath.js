@@ -1,13 +1,13 @@
 'use strict';
 let apiConfig= {
         
-  // baseIp:'yjsc.2012626.com',
-  // basePath: 'http://yjsc.2012626.com/yjsc',
-  // socketPath:'ws://yjsc.2012626.com/yjsc/websocket',
+  baseIp:'yjsc.2012626.com',
+  basePath: 'http://yjsc.2012626.com/yjsc',
+  socketPath:'ws://yjsc.2012626.com/yjsc/websocket',
   
-  baseIp: 'localhost',
-  basePath: 'http://localhost:8804/yjsc',
-  socketPath: 'ws://localhost:8804/yjsc/websocket',
+  // baseIp: 'localhost',
+  // basePath: 'http://localhost:8804/yjsc',
+  // socketPath: 'ws://localhost:8804/yjsc/websocket',
 
   login: '/admin/login',
   addNoChekc:'/admin/addNoCheck',
@@ -31,7 +31,9 @@ let apiConfig= {
   getStorePackageRecord:'/storePackage/getStorePackageRecord',
   getStorePackageRecordExportUrl:'/storePackage/getStorePackageRecordExportUrl',
   getUserExportUrl:'/storePackage/getUserExportUrl',
-  getAllStoreList:'/admin/getAllStoreList'
+  getAllStoreList:'/admin/getAllStoreList',
+  updateStorePackageRecord:'/storePackage/updateStorePackageRecord',
+  indexData: '/admin/getweanalysisappiduserportrait'
 };
 
 export {apiConfig}

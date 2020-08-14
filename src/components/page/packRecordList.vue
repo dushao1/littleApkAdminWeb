@@ -9,8 +9,8 @@
     </div>
     <div class="handle-box">
       <el-button type="primary" icon="export" class="handle-del mr10" @click="exportSelect">导出</el-button>
-      <!-- <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input> -->
-      <!-- <el-button type="primary" icon="search" @click="search">搜索</el-button> -->
+      <el-input v-model="selectWord" placeholder="筛选关键词" class="handle-input mr10"></el-input> 
+      <el-button type="primary" icon="search" @click="search">搜索</el-button>
     </div>
     <div class="container">
       <el-table
@@ -22,9 +22,25 @@
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
         <el-table-column prop="title" label="奖品标题" width="150"></el-table-column>
+        <el-table-column prop="packCode" label="兑换码" width="150"></el-table-column>
+        <el-table-column prop="getState" label="领取状态" width="150">
+          <template slot-scope="scope">
+            <el-switch
+                active-text ="是"
+                inactive-text = "否"
+                active-color="#5B7BFA"
+                inactive-color="#dadde5"
+                :active-value="1"
+                :inactive-value="0"
+                @change="updateRecordState($event, scope.row,scope.$index)"
+                v-model="scope.row.getState"        
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
         <el-table-column prop="nickName" label="微信用户昵称" min-width="70px"></el-table-column>
         <el-table-column prop="mobile" label="联系电话" min-width="70px"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="120"></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" width="180px"></el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination
@@ -55,6 +71,7 @@ export default {
       tableData: [],
       totalCount: 0,
       pageCount: 1,
+      selectWord:'',
       multipleSelection: []
     };
   },
@@ -68,6 +85,24 @@ export default {
   },
   components: {},
   methods: {
+    updateRecordState(data,record,index){
+      let that = this;
+       this.$confirm('确认修改操作？').then(_ => {
+            this.$axios.post(
+              this.$apiPath.basePath +
+                this.$apiPath.updateStorePackageRecord , record
+            ).then(function(res) {
+              that.$message.success("确认成功");
+            });
+      }).catch(_ => {
+        if(record.getState == 0){
+          this.tableData[index].getState = 1;
+        } else {
+          this.tableData[index].getState = 0;
+        }
+      });
+      
+    },
     exportSelect() {
       const length = this.multipleSelection.length;
       var that = this;
@@ -98,23 +133,28 @@ export default {
     getData() {
       // 开发环境使用 easy-mock 数据，正式环境使用 json 文件
       var _this = this;
-      this.$axios
-        .post(
-          this.$apiPath.basePath +
-            this.$apiPath.getStorePackageRecord +
-            "?page=" +
-            this.cur_page
-        )
-        .then(function(res) {
-          console.log(res.data.data);
+      this.$axios.post(
+          this.$apiPath.basePath + this.$apiPath.getStorePackageRecord + "?page=" + this.cur_page+'&content=' + this.selectWord
+        ).then(function(res) {
           _this.tableData = res.data.data.list;
-
           _this.totalCount = res.data.data.totalCount;
-        })
-        .catch(function(error) {
+        }).catch(function(error) {
+          console.log(error);
+        });
+    },
+    search(){
+    var _this = this;
+    this.cur_page =1;
+      this.$axios.post(
+          this.$apiPath.basePath + this.$apiPath.getStorePackageRecord + "?page=1" +'&content=' + this.selectWord
+        ).then(function(res) {
+          _this.tableData = res.data.data.list;
+          _this.totalCount = res.data.data.totalCount;
+        }).catch(function(error) {
           console.log(error);
         });
     }
+
     
   }
 };

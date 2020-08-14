@@ -61,7 +61,6 @@ export default {
   methods: {
     async submitForm(formName) {
       var _this = this;
-        console.log(JSON.stringify(_this.$apiPath))
       _this.$refs[formName].validate(valid => {
         _this.$axios
           .post(_this.$apiPath.basePath+_this.$apiPath.login, {
@@ -69,8 +68,7 @@ export default {
             password: _this.ruleForm.password
           })
           .then(res => {
-            console.log(JSON.stringify(res.data));
-            if (valid) {
+            if (res.data.status == 200) {
               localStorage.setItem("ms_username", _this.ruleForm.username);
               localStorage.setItem("admin_info", JSON.stringify(res.data.data));
               
@@ -95,8 +93,12 @@ export default {
                   _this.$router.push("/contents");
                 }
               });
+              return true;
             } else {
-              console.log("error submit!!");
+                this.$notify.error({
+                    title: '登陆失败',
+                    message: '用户名或密码错误'
+                });
               return false;
             }
           })
