@@ -99,6 +99,9 @@
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
+                <el-form-item label="获取概率" label-width="8%" style="text-align:left">
+                    <el-input v-model="form.getPercent" placeholder="请输入>=0 且小于1的小数,例:5% 应输入0.05 "></el-input>
+                </el-form-item>
                 <el-form-item v-model="form.allShowState" label-width="12%" label="是否全域展示">
                     <template slot-scope="scope">
                         <el-switch
@@ -154,34 +157,26 @@
                     <el-col :span="11">
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startDate" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
-                    <!-- <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker placeholder="选择时间" v-model="form.startTime" style="width: 100%;"></el-time-picker>
-                    </el-col> -->
+
                 </el-form-item>
                 <el-form-item label="结束时间" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endDate" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
-                    <!-- <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
-                    </el-col> -->
                 </el-form-item>
                 <el-form-item v-if="roleId == 1" label="置顶截止" label-width="8%" style="text-align:left">
                     <el-col :span="11">
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
-                    <!-- <el-col class="line" :span="2">-</el-col>
-                    <el-col :span="11">
-                        <el-time-picker placeholder="选择时间" v-model="form.endTime" style="width: 100%;"></el-time-picker>
-                    </el-col> -->
                 </el-form-item>
                 <el-form-item label="剩余红包" label-width="8%" style="text-align:left">
                     <el-input v-model="form.surplusCount" ></el-input>
                 </el-form-item>
                  <el-form-item label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
+                </el-form-item>
+                <el-form-item label="获取概率" label-width="8%" style="text-align:left">
+                    <el-input v-model="form.getPercent" placeholder="请输入>=0 且小于1的小数,例:5% 应输入0.05 "></el-input>
                 </el-form-item>
                 <el-form-item v-model="form.allShowState" label-width="8%" label="是否全域展示">
                     <template >
@@ -307,7 +302,8 @@
                     startDate:'',
                     endDate:'',
                     firstEndTime:'',
-                    allShowState:0
+                    allShowState:0,
+                    getPercent:0
                 },
                 idx: -1
             }
@@ -507,7 +503,8 @@
                     endDate:item.endTime,
                     cropDetailImg:item.detailImg,
                     firstEndTime:item.firstEndTime,
-                    allShowState:item.allShowState
+                    allShowState:item.allShowState,
+                    getPercent:item.getPercent
                 }
                 // this.$refs.quillEdiotr.quill.enable(true);
                 // this.$refs.quillEdiotr.quill.blur();
@@ -569,60 +566,60 @@
                 if(this.lat != 0 && this.lon != 0){
                     this.editVisible = false;
                     var item = this.form;
-                    const tableItem = this.tableData[this.idx];
-                    let param = new FormData();
-                        console.log('1saveEdit: ' + this.lat+" long:" + this.lon);
-                    if(this.cropImg !=null && this.cropImg != '' && !this.cropImg.startsWith("http")){
-                        console.log('2saveEdit: ' + this.cropImg);
-                        let tempIndexFile = this.convertBase64UrlToBlob(this.cropImg);
-                        param.append('file', tempIndexFile);//通过append向form对象添加数据 
-                        param.append('indexFileName', "1."+this.cropImg.split(';')[0].split('/')[1]);
+                    if(item.getPercent >= 0 && item.getPercent <=1){
+                        const tableItem = this.tableData[this.idx];
+                        let param = new FormData();
+                        if(this.cropImg !=null && this.cropImg != '' && !this.cropImg.startsWith("http")){
+                            let tempIndexFile = this.convertBase64UrlToBlob(this.cropImg);
+                            param.append('file', tempIndexFile);//通过append向form对象添加数据 
+                            param.append('indexFileName', "1."+this.cropImg.split(';')[0].split('/')[1]);
+                        }
+                        if(this.cropDetailImg != null && this.cropDetailImg != ''&& !this.cropDetailImg.startsWith("http")){
+                            let tempDetailFile = this.convertBase64UrlToBlob(this.cropDetailImg);
+                            param.append('detailFile', tempDetailFile);//通过append向form对象添加数据 
+                            param.append('detailFailName', "1."+this.cropDetailImg.split(';')[0].split('/')[1]);
+                        }
+                        param.append("title", item.title);
+                        param.append("titleDetail", item.titleDetail);
+                        param.append("surplusCount", item.surplusCount== null?0:item.surplusCount);
+                        param.append("totalCount", item.totalCount==null?0:item.totalCount);
+                        param.append("sId", tableItem.sId);
+                        param.append("allShowState",item.allShowState);
+                        param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
+                        param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));             
+                        param.append("getPercent",item.getPercent)
+                        if(this.roleId == 1 && item.firstEndTime != null){
+                            param.append("firstEndTime", _public.formatDate(item.firstEndTime, 'yyyy-MM-dd hh:mm:ss'));
+                        }
+                        param.append("lat", this.lat);
+                        param.append("lng", this.lon);
+                        //param.append('chunk','0');//添加form表单中其他数据
+                        //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
+                        let config = {
+                            headers:{'Content-Type':'multipart/form-data'}
+                        };
+                    
+                        var querystring = this.$Qs;
+                        var message = this.$message;
+                        var that = this;
+                        this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,param,config)
+                            .then(function (res) {
+                                message.success('修改成功');
+                                that.getData();
+                                that.lat = 0;
+                                that.lng = 0;
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                            });
+                        this.fileList[0] = null;
+                        this.fileList[1] = null;
+                    } else{
+                        this.$message.error('请输入有效的概率值');
                     }
-                    console.log('3saveEdit: ' + this.lat+" long:" + this.lon);
-                    if(this.cropDetailImg != null && this.cropDetailImg != ''&& !this.cropDetailImg.startsWith("http")){
-                        console.log('4saveEdit: ' + this.lat+" long:" + this.lon);
-                        let tempDetailFile = this.convertBase64UrlToBlob(this.cropDetailImg);
-                        param.append('detailFile', tempDetailFile);//通过append向form对象添加数据 
-                        param.append('detailFailName', "1."+this.cropDetailImg.split(';')[0].split('/')[1]);
-                    }
-                    param.append("title", item.title);
-                    param.append("titleDetail", item.titleDetail);
-                    param.append("surplusCount", item.surplusCount== null?0:item.surplusCount);
-                    param.append("totalCount", item.totalCount==null?0:item.totalCount);
-                    param.append("sId", tableItem.sId);
-                    param.append("allShowState",item.allShowState);
-                    param.append("startDate", _public.formatDate(item.startDate, 'yyyy-MM-dd hh:mm:ss'));
-                    param.append("endDate", _public.formatDate(item.endDate, 'yyyy-MM-dd hh:mm:ss'));
-                    if(this.roleId == 1 && item.firstEndTime != null){
-                        param.append("firstEndTime", _public.formatDate(item.firstEndTime, 'yyyy-MM-dd hh:mm:ss'));
-                    }
-                    param.append("lat", this.lat);
-                    param.append("lng", this.lon);
-                    //param.append('chunk','0');//添加form表单中其他数据
-                    //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
-                    let config = {
-                        headers:{'Content-Type':'multipart/form-data'}
-                    };
-                
-                    var querystring = this.$Qs;
-                    var message = this.$message;
-                    var that = this;
-                    this.$axios.post(this.$apiPath.basePath + this.$apiPath.updateStore,param,config)
-                        .then(function (res) {
-                            message.success('修改成功');
-                            that.getData();
-                            that.lat = 0;
-                            that.lng = 0;
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    this.fileList[0] = null;
-                    this.fileList[1] = null;
                 }else {
                     this.$message.error('请选择定位地点');
                 }
-                
             },
             saveAdd(e) {
                 // this.$set(this.tableData, this.idx, this.form);
@@ -631,8 +628,13 @@
                 if(this.lat != 0 && this.lon != 0){
                      this.editVisible = false;
                     const item = this.form;
+                    if(item.getPercent >= 0 && item.getPercent <=1){
                     const tableItem = this.tableData[this.idx];
                     let param = new FormData(); //创建form对象"
+                    if(this.addIndexImg== '' || this.addDetailImg == '' || this.addIndexImg == 'img/img.146655c9.jpg' || this.addDetailImg == 'img/img.146655c9.jpg'){
+                        this.$message.error('请选择首图及详情图');
+                        return;
+                    }
                     let tempIndexFile = this.convertBase64UrlToBlob(this.addIndexImg);
                     let tempDetailFile = this.convertBase64UrlToBlob(this.addDetailImg);
 
@@ -640,13 +642,22 @@
                     param.append('detailFile', tempDetailFile);//通过append向form对象添加数据 
                     param.append('indexFileName', "1."+this.addIndexImg.split(';')[0].split('/')[1]);
                     param.append('detailFailName', "1."+this.addDetailImg.split(';')[0].split('/')[1]);
+                    if(item.title == ''){
+                        this.$message.error('请输入标题');
+                        return;
+                    }
                     param.append("title", item.title);
                     param.append("titleDetail", item.addTitleDetail);
                     param.append("surplusCount", item.totalCount);
                     param.append("totalCount", item.totalCount);
                     param.append("allShowState",item.allShowState);
+                    if(item.startDate == null || item.endDate == null|| item.startDate == '' ||item.endDate == ''|| item.startDate.getTime() == null || item.endDate.getTime() == null ){
+                        this.$message.error('请输入开始及截至时间');
+                        return;
+                    }
                     param.append("startDate", _public.formatDate(item.startDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     param.append("endDate", _public.formatDate(item.endDate.getTime(), 'yyyy-MM-dd hh:mm:ss'));
+                    param.append("getPercent",item.getPercent)
                     if(this.roleId == 1  && item.firstEndTime != null){
                         param.append("firstEndTime", _public.formatDate(item.firstEndTime.getTime(), 'yyyy-MM-dd hh:mm:ss'));
                     }
@@ -672,6 +683,9 @@
                         });
                     this.addVisible = false;
                     this.getData();
+                    } else{
+                        this.$message.error('请输入有效的概率值');
+                    }
                 }else {
                     this.$message.error('请选择定位地点');
                 }
