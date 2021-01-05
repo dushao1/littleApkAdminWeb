@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "9cf-chart": "^1.0.20",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-polyfill": "^6.26.0",
     "echarts": "^4.8.0",
     "element-ui": "^2.4.11",
