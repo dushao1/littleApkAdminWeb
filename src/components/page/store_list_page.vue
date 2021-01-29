@@ -116,10 +116,33 @@
                         </el-switch>
                     </template>
                 </el-form-item>
+                <el-form-item label="音频文件:" label-width="8%" style="text-align:left">
+                    <el-upload
+                        class="upload-demo"
+                        :action="uploadActionUrl"
+                        :http-request="customUpload"
+                        :on-success="voiceUploadSuccess"
+                        :on-error="voiceUploadFile"
+                        :limit=1
+                        :multiple=false
+                        accept="mp3"
+                        :on-exceed="onExceed"
+                        :before-upload="beforeUpload"
+                        :on-remove="handleRemove"
+                        :on-progress="onprogress"
+                        :on-change="onAddChange"
+                        :file-list="voiceList">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text"><em>点击上传</em></div>
+                        <div slot="tip" class="el-upload__tip">只能上传MP3文件，且不超过20Mb</div>
+                    </el-upload>  
+                    
+                </el-form-item>
+                <iframe id="mapPage" width="100%" height="800px" frameborder=0
+                    src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=GQGBZ-PW3KK-LIHJC-AB3JY-SESOE-E2BEZ&referer=yjscTencent">
+                </iframe>
+
             </el-form>
-            <iframe id="mapPage" width="100%" height="800px" frameborder=0
-                src="https://apis.map.qq.com/tools/locpicker?search=1&type=1&key=GQGBZ-PW3KK-LIHJC-AB3JY-SESOE-E2BEZ&referer=yjscTencent">
-            </iframe>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveAdd">确 定</el-button>
@@ -191,6 +214,28 @@
                     >
                     </el-switch>
                     </template>
+                </el-form-item>
+                <el-form-item label="音频文件:" label-width="8%" style="text-align:left">
+                    <el-upload
+                        class="upload-demo"
+                        :action="uploadActionUrl"
+                        :http-request="customUpload"
+                        :on-success="voiceUploadSuccess"
+                        :on-error="voiceUploadFile"
+                        :limit=1
+                        :multiple=false
+                        accept="mp3"
+                        :on-exceed="onExceed"
+                        :before-upload="beforeUpload"
+                        :on-remove="handleRemove"
+                        :on-progress="onprogress"
+                        :on-change="onAddChange"
+                        :file-list="voiceList">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text"><em>点击上传</em></div>
+                        <div slot="tip" class="el-upload__tip">只能上传MP3文件，且不超过20Mb</div>
+                    </el-upload>  
+                    
                 </el-form-item>
             </el-form>
              <iframe id="editPage" width="100%" height="800px" frameborder=0
@@ -268,6 +313,7 @@
                 select_word: '',
                 del_list: [],
                 fileList:[],
+                voiceList:[],
                 totalCount:0,
                 editVisible: false,
                 delVisible: false,
@@ -283,6 +329,9 @@
                 imgDetailSrc:'',
                 addIndexImg:'',
                 addDetailImg:'',
+                uploadActionUrl:'',
+                voiceUploadingState: false,
+                processLength:0,
                 roleId:0,
                 lat:0,
                 lon:0,
@@ -296,6 +345,7 @@
                     detailImg: '',
                     endTime: '',
                     startTime: '',
+                    voiceUrl:'',
                     surplusCount: '',
                     totalCount: '',
                     status: '',
@@ -324,9 +374,8 @@
             }, false);
             if(JSON.parse(localStorage.getItem('admin_info')).role.id == 1){
                 that.roleId = 1;
-                console.log("  adminInfo123 "+JSON.parse(localStorage.getItem('admin_info')));
             }
-            console.log("  adminInfo "+JSON.parse(localStorage.getItem('admin_info')));
+            this.uploadActionUrl =this.$apiPath.basePath + this.$apiPath.addVoice
         },
         computed: {
             data() {
@@ -487,6 +536,13 @@
                 } else {
                     this.cropDetailImg = require('../../assets/img/img.jpg');
                 }
+                if(item.voiceUrl != null && item.voiceUrl != ''){
+                    this.voiceList.push({
+                        "url": item.voiceUrl,
+                        "name":item.voiceUrl,
+                        "id": item.id
+                    })
+                }
                 console.log('123'+item.detailImg);
                 this.form = {
                     sId: item.sId,
@@ -506,6 +562,7 @@
                     allShowState:item.allShowState,
                     getPercent:item.getPercent
                 }
+                
                 // this.$refs.quillEdiotr.quill.enable(true);
                 // this.$refs.quillEdiotr.quill.blur();
                 console.log('handleForm'+JSON.stringify(this.form))
@@ -564,6 +621,10 @@
                 // this.$set(this.tableData, this.idx, this.form);
                  //创建form对象
                 if(this.lat != 0 && this.lon != 0){
+                    if(this.voiceUploadingState == true){
+                        this.$message.error('请等待音频文件100%上传完成,若异常请刷新页面重试');
+                        return;
+                    }
                     this.editVisible = false;
                     var item = this.form;
                     if(item.getPercent >= 0 && item.getPercent <=1){
@@ -593,6 +654,7 @@
                         }
                         param.append("lat", this.lat);
                         param.append("lng", this.lon);
+                        param.append("voiceUrl", item.voiceUrl);
                         //param.append('chunk','0');//添加form表单中其他数据
                         //console.log(param.get('tweetPic')); //FormData私有类对象，访问不到，可以通过get判断值是否传进去
                         let config = {
@@ -612,6 +674,7 @@
                             .catch(function (error) {
                                 console.log(error);
                             });
+                        this.voiceList = [];
                         this.fileList[0] = null;
                         this.fileList[1] = null;
                     } else{
@@ -622,11 +685,12 @@
                 }
             },
             saveAdd(e) {
-                // this.$set(this.tableData, this.idx, this.form);
-               
-                // console.log("123456" + JSON.stringify(item));
                 if(this.lat != 0 && this.lon != 0){
-                     this.editVisible = false;
+                    if(this.voiceUploadingState == true){
+                        this.$message.error('请等待音频文件100%上传完成,若异常请刷新页面重试');
+                        return;
+                    }
+                    this.editVisible = false;
                     const item = this.form;
                     if(item.getPercent >= 0 && item.getPercent <=1){
                     const tableItem = this.tableData[this.idx];
@@ -663,6 +727,7 @@
                     }
                     param.append("lat", this.lat);
                     param.append("lng", this.lon);
+                    param.append("voiceUrl", item.voiceUrl);
                     let config = {
                         headers:{'Content-Type':'multipart/form-data'}
                     };
@@ -683,6 +748,7 @@
                         });
                     this.addVisible = false;
                     this.getData();
+                    this.voiceList = [];
                     } else{
                         this.$message.error('请输入有效的概率值');
                     }
@@ -712,14 +778,14 @@
                         console.log(error);
                     });
             },
-             onEditorChange({ editor, html, text }) {
+            onEditorChange({ editor, html, text }) {
                 this.content = html;
             },
             submit(){
                 console.log(this.content);
                 this.$message.success('提交成功！');
             },
-             handleClose(done) {
+            handleClose(done) {
                 this.$confirm('确认关闭？')
                 .then(_ => {
                     done();
@@ -739,6 +805,88 @@
                     ia[i] = bytes.charCodeAt(i);
                 }
                 return new Blob([ab], { type: 'image/jpeg' });
+            },
+            voiceUploadSuccess(response, file, fileList){
+                this.form.voiceUrl = response.data.data;
+                console.log("上传成功回调:" + this.form.voiceUrl)
+                this.voiceUploadingState = false;
+            },
+            voiceUploadFile(err, file, fileList){
+                console.log("上传失败回调")
+                this.$message({
+                        message: '上传失败,请重新上传',
+                        type: 'warning'
+                    });
+                this.voiceUploadingState = false;
+            },
+            voiceUploading(event, file, fileList){
+                console.log("上传中回调")
+            },
+            beforeUpload(file) {
+                this.voiceUploadingState = true;
+                const size = file.size / 1024 / 1024
+                if (size > 50) {
+                    this.$notify.warning({
+                    title: '警告',
+                    message: '大小必须小于50M'
+                    })
+                    return false;
+                }
+                var testmsg=file.name.substring(file.name.lastIndexOf('.')+1)
+                const extension = testmsg === 'mp3'
+                if(!extension ) {
+                    this.$message({
+                        message: '上传文件只能是 mp3格式!',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+               
+            },
+            onExceed(files, fileList){
+                this.$message.warning(`当前限制选择 1 个文件`);
+            },
+            handleRemove(file, fileList){
+                console.log(`删除文件`);
+            },
+            onprogress(event, file, fileList){
+                console.log("上传中..."+JSON.stringify(event))
+            },
+            customUpload(file) {
+                let FormDatas = new FormData();
+                FormDatas.append('file', file.file);
+                var that = this;
+                this.$axios({
+                    url: that.uploadActionUrl,
+                    method: 'post',
+                    data: FormDatas,
+                    //上传进度
+                    onUploadProgress: (progressEvent) => {
+                        
+                        // let num = progressEvent.loaded / progressEvent.total * 100 | 0;  //百分比
+                        // console.log("上传进度回调 进度: "+ num+" loaded:" +progressEvent.loaded + " 总量: " + progressEvent.total+ " event: " + JSON.stringify(progressEvent))
+                        file.onProgress({percent: 0})     //进度条
+                    }
+                }).then(data => {
+                    file.onSuccess(data); //上传成功(打钩的小图标)
+                })
+            },
+            onAddChange(file, fileList){
+                console.log("文件列表"+JSON.stringify(fileList))
+                if(file.status === 'ready'){
+                    this.processLength =0
+                    const interval = setInterval(() =>{
+                        if(this.processLength >= 99 ){
+                            clearInterval(interval)
+                            return 
+                        }
+                        this.processLength +=1
+                        file.percentage=this.processLength
+                    },40)
+                }
+                if(file.status === 'success'){
+                    this.processLength = 100
+                }
             }
         }
     }

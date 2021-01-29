@@ -10,6 +10,7 @@ let apiConfig= {
   // socketPath: 'ws://localhost:8804/yjsc/websocket',
 
   login: '/admin/login',
+  addVoice: '/backgroundStore/addVoice',
   addNoChekc:'/admin/addNoCheck',
   getNoCheckList:'/admin/getNoCheckList',
   deleteNoCheck:'/admin/deleteNoCheck',
