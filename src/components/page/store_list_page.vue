@@ -560,7 +560,8 @@
                     cropDetailImg:item.detailImg,
                     firstEndTime:item.firstEndTime,
                     allShowState:item.allShowState,
-                    getPercent:item.getPercent
+                    getPercent:item.getPercent,
+                    voiceUrl:''
                 }
                 
                 // this.$refs.quillEdiotr.quill.enable(true);
@@ -602,7 +603,8 @@
                     status: '',
                     startDate:'',
                     endDate:'',
-                    allShowState:1
+                    allShowState:1,
+                    voiceUrl:''
                 }
                 this.addIndexImg = require('../../assets/img/img.jpg');
                 this.addDetailImg = require('../../assets/img/img.jpg');
