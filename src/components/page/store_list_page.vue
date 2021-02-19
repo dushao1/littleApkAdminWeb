@@ -543,7 +543,7 @@
                         "id": item.id
                     })
                 }
-                console.log('123'+item.detailImg);
+                // console.log('123'+item.detailImg);
                 this.form = {
                     sId: item.sId,
                     title: item.title,
@@ -560,13 +560,13 @@
                     cropDetailImg:item.detailImg,
                     firstEndTime:item.firstEndTime,
                     allShowState:item.allShowState,
-                    getPercent:item.getPercent,
+                    getPercent:item.getPercent==null?0:item.getPercent,
                     voiceUrl:''
                 }
                 
                 // this.$refs.quillEdiotr.quill.enable(true);
                 // this.$refs.quillEdiotr.quill.blur();
-                console.log('handleForm'+JSON.stringify(this.form))
+                // console.log('handleForm'+JSON.stringify(this.form))
                 this.editVisible = true;
                 var that = this;
                 this.$nextTick(function() {
@@ -629,7 +629,7 @@
                     }
                     this.editVisible = false;
                     var item = this.form;
-                    if(item.getPercent >= 0 && item.getPercent <=1){
+                    if(item.getPercent >= 0 && item.getPercent <=1 && item.getPercent !=null){
                         const tableItem = this.tableData[this.idx];
                         let param = new FormData();
                         if(this.cropImg !=null && this.cropImg != '' && !this.cropImg.startsWith("http")){
@@ -680,6 +680,7 @@
                         this.fileList[0] = null;
                         this.fileList[1] = null;
                     } else{
+                        console.log("概率异常")
                         this.$message.error('请输入有效的概率值');
                     }
                 }else {
