@@ -49,7 +49,11 @@ export default new Router({
                     component: resolve => require(['../components/page/Corpus.vue'], resolve),
                     meta: { title: '语料列表' }
                 },
-
+                {
+                    path: '/simplePackRecordList',
+                    component: resolve => require(['../components/page/simplePackRecordList.vue'], resolve),
+                    meta: { title: '奖品列表' }
+                },
                 
                 {
                     path: '/dashboard',

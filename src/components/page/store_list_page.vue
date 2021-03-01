@@ -96,10 +96,10 @@
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
-                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
+                 <el-form-item v-if="roleId == 1" label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
-                <el-form-item label="获取概率" label-width="8%" style="text-align:left">
+                <el-form-item v-if="roleId == 1" label="获取概率" label-width="8%" style="text-align:left">
                     <el-input v-model="form.getPercent" placeholder="请输入>=0 且小于1的小数,例:5% 应输入0.05 "></el-input>
                 </el-form-item>
                 <el-form-item v-model="form.allShowState" label-width="12%" label="是否全域展示">
@@ -192,13 +192,13 @@
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="form.firstEndTime" style="width: 100%;" value-format="timestamp"></el-date-picker>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="剩余红包" label-width="8%" style="text-align:left">
+                <el-form-item v-if="roleId == 1" label="剩余红包" label-width="8%" style="text-align:left">
                     <el-input v-model="form.surplusCount" ></el-input>
                 </el-form-item>
-                 <el-form-item label="红包总数" label-width="8%" style="text-align:left">
+                 <el-form-item v-if="roleId == 1" label="红包总数" label-width="8%" style="text-align:left">
                     <el-input v-model="form.totalCount"></el-input>
                 </el-form-item>
-                <el-form-item label="获取概率" label-width="8%" style="text-align:left">
+                <el-form-item v-if="roleId == 1" label="获取概率" label-width="8%" style="text-align:left">
                     <el-input v-model="form.getPercent" placeholder="请输入>=0 且小于1的小数,例:5% 应输入0.05 "></el-input>
                 </el-form-item>
                 <el-form-item v-model="form.allShowState" label-width="8%" label="是否全域展示">
@@ -304,6 +304,7 @@
         name: 'baseTable',
         data() {
             return {
+                isAdmin:false,
                 url: './vuetable.json',
                 quillOption: quillConfig,
                 tableData: [],
@@ -358,11 +359,35 @@
                 idx: -1
             }
         },
+        
         created() {
+            var that = this;
+            //判定是否需要登录
+            var flag = true;
+            var adminInfoStr = localStorage.getItem("admin_info") ;
+            if(adminInfoStr != null && adminInfoStr != ''){
+                var adminInfo = JSON.parse(adminInfoStr);
+                if(adminInfo.roleId == 1){
+                    that.data.isAdmin = true;
+                    that.roleId = 1;
+                }
+                if(adminInfo.roleId != null && adminInfo.loginTime != null){
+                    if((Date.parse(new Date()) - adminInfo.loginTime) < 24*1*3600000){
+                        flag = false;
+                    }
+                }
+            }
+            if(flag){
+                that.$router.push("/login");
+            }
+
+            console.log("isAdmin",that.data.isAdmin)
+            console.log("adminInfo" + adminInfoStr)
+            console.log("shifou wei guanliyuan" + this.isAdmin)
             this.getData();
             // this.cropImg = this.defaultSrc;
             // this.cropDetailImg = this.defaultSrc;
-            var that = this;
+            
             window.addEventListener('message', function(event) {
                 // 接收位置信息，用户选择确认位置点后选点组件会触发该事件，回传用户的位置信息
                 var loc = event.data;
@@ -372,9 +397,6 @@
                 that.lat = loc.latlng.lat;
                 }
             }, false);
-            if(JSON.parse(localStorage.getItem('admin_info')).role.id == 1){
-                that.roleId = 1;
-            }
             this.uploadActionUrl =this.$apiPath.basePath + this.$apiPath.addVoice
         },
         computed: {
@@ -604,7 +626,8 @@
                     startDate:'',
                     endDate:'',
                     allShowState:1,
-                    voiceUrl:''
+                    voiceUrl:'',
+                    getPercent:0
                 }
                 this.addIndexImg = require('../../assets/img/img.jpg');
                 this.addDetailImg = require('../../assets/img/img.jpg');

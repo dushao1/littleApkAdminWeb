@@ -21,26 +21,9 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="title" label="奖品标题" width="150"></el-table-column>
-        <el-table-column prop="packCode" label="兑换码" width="150"></el-table-column>
-        <el-table-column prop="getState" label="领取状态" width="150">
-          <template slot-scope="scope">
-            <el-switch
-                active-text ="是"
-                inactive-text = "否"
-                active-color="#5B7BFA"
-                inactive-color="#dadde5"
-                :active-value="1"
-                :inactive-value="0"
-                @change="updateRecordState($event, scope.row,scope.$index)"
-                v-model="scope.row.getState"        
-            >
-            </el-switch>
-          </template>
-        </el-table-column>
-        <el-table-column prop="nickName" label="微信用户昵称" min-width="70px"></el-table-column>
-        <el-table-column prop="mobile" label="联系电话" min-width="70px"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180px"></el-table-column>
+        <el-table-column prop="nickName" label="微信用户昵称" ></el-table-column>
+        <el-table-column prop="createTime" label="创建时间" ></el-table-column>
+        <el-table-column prop="packCode" label="兑换码"></el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination
@@ -105,24 +88,6 @@ export default {
   },
   components: {},
   methods: {
-    updateRecordState(data,record,index){
-      let that = this;
-       this.$confirm('确认修改操作？').then(_ => {
-            this.$axios.post(
-              this.$apiPath.basePath +
-                this.$apiPath.updateStorePackageRecord , record
-            ).then(function(res) {
-              that.$message.success("确认成功");
-            });
-      }).catch(_ => {
-        if(record.getState == 0){
-          this.tableData[index].getState = 1;
-        } else {
-          this.tableData[index].getState = 0;
-        }
-      });
-      
-    },
     exportSelect() {
       const length = this.multipleSelection.length;
       var that = this;
